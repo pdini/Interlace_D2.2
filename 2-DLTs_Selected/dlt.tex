@@ -187,7 +187,7 @@ Thus, nodes without liveness are blocked, whereas nodes without safety are diver
 Mazi\`eres explains that the above definition of liveness is weak because it only says that a node \emph{can} externalize, not that it \emph{will} or \emph{must}. As a consequence, there is a possibility for consensus to be forever delayed by, for example, preemptive reordering of the transactions. It is not clear whether this issue matters in the case of INTERLACE since we will not implement a completely decentralized system: some level of centralized control is likely to remain. Mazi\`eres in any case provides relevant references that can be consulted if this issue needs to be analysed in depth and resolved in some robust way.
 
 \subsubsection{Optimal Resilience: Quorum Intersection and Dispensable Sets\\}
-As is commonly assumed for asynchronous systems, messages between well-behaved nodes are eventually delivered, but can otherwise be delayed indefinitely or reordered arbitrarily. This section starts becoming more involved because it addresses this non-trivial question: given a specific $(V, Q)$ and subset of $V$ that is ill-behaved, what are the best levels of safety and liveness that a FBAS can guarantee in an arbitrary network?
+As is commonly assumed for asynchronous systems, messages between well-behaved nodes are eventually delivered, but can otherwise be delayed indefinitely or reordered arbitrarily. This section starts becoming more involved because it addresses this non-trivial question: given a specific $(V, Q)$ and a subset of $V$ that is ill-behaved, what are the best levels of safety and liveness that a FBAS can guarantee in an arbitrary network?
 
 \begin{defin}
 A FBAS has \emph{\textbf{quorum intersection}} iff any two of its quorums share at least one node.\footnote{The term `iff' means `if and only if'. It implies that the causal dependence works in both directions, in contrast to merely `if' which works only in the reverse direction. In symbols, `A iff B' is written $A \Leftrightarrow B$, whereas `A if B' is written $B \Rightarrow A$ and is also read as `B implies A'.} In other words, $\forall U_i, U_j \in FBAS, U_i \cap U_j \ne 0$, where $i$ and $j$ range over the number of quorums for a given FBAS.
@@ -203,7 +203,7 @@ Therefore, when a FBAS has many quorums, quorum intersection (QI) fails when \em
 
 Figure \ref{fig:QI1} shows a system of 6 nodes that lacks QI, since the function $Q$ allows two quorums on the set of 6 nodes that do not intersect. Mazi\`eres says that the two quorums can separately agree on contradictory statements, which makes sense at an abstract level but not so much in the case of this example. In other words, if $v_5$ cannot communicate with $v_1$ how can it say something about $v_1$ that $v_1$ might not agree with? The answer is that the whole set of all nodes $\{ v_1, \cdots, v_6 \}$ is \emph{also} a quorum, which in this case we can call $U$, and it intersects the other two. So this is an example of a system that has multiple quorums but two of them do not intersect and, therefore, the system does not have QI.
 
-Safety cannot be guaranteed because such a system can operate like two separate FBAS systems that do not communicate. However, safety may not be possible in a system with QI, like the one shown in Figure \ref{fig:QI2}, if the intersecting node is ill-behaved. If $v_7$ makes inconsistent statements to the left and right quorums they are as good as disconnected. Therefore, safety can be guaranteed only if the well-behaved nodes have QI; or, put otherwise, a FBAS $(V, Q)$ can survive Byzantine failure by a set $B \subseteq V$ iff $(V, Q)$ has QI after deleting the nodes in $B$ from $V$ and from all slices in $Q$. 
+Safety cannot be guaranteed because such a system can operate like two separate FBAS systems that do not communicate. However, safety may not be possible even in a system with QI, like the one shown in Figure \ref{fig:QI2}, if the intersecting node is ill-behaved. If $v_7$ makes inconsistent statements to the left and right quorums they are as good as disconnected. Therefore, safety can be guaranteed only if the well-behaved nodes have QI; or, put otherwise, a FBAS $(V, Q)$ can survive Byzantine failure by a set $B \subseteq V$ iff $(V, Q)$ has QI after deleting the nodes in $B$ from $V$ and from all slices in $Q$. 
 
 \begin{figure}[h]
 \centering
@@ -222,15 +222,17 @@ Q^B(v) = \{ q \setminus B\ |\ q \in Q(v) \},		\qquad \forall v \in V \setminus B
 It is the responsibility of each node $v$ to ensure that $Q(v)$ does not violate QI. From Mazi\`eress paper it is not clear how, however. Be that as it may, assume that Figure \ref{fig:QI2} evolved from the 3-node FBAS $\{ v_1, v_2, v_3 \}$ to a system that includes also $\{ v_4, v_5, v_6 \}$. Assume now that $\{ v_4, v_5, v_6 \}$ are malicious such that they choose slices that do not satisfy QI. But $Q(v)$ is meaningless for a malicious node. That's why the necessary condition for safety, QI after deleting ill-behaved nodes, is unaffected by the slices of ill-behaved nodes. The system $(V, Q)^{ \{ v_4, v_5, v_6 \} }$ restores QI for $\{ v_1, v_2, v_3 \}$. Note that we have not yet said how such deletion takes place. For now we just say that the protocol must guarantee safety for $\{ v_1, v_2, v_3 \}$ without these nodes having to know that $\{ v_4, v_5, v_6 \}$ are malicious.
 
 Turning now to dispensable sets or DSets, the safety and liveness of the nodes outside a DSet can  be guaranteed regardless of the behaviour of the nodes inside the DSet.
-
-
 \begin{defin}
-Let $(V, Q)$ be a FBAS and $B \subseteq V$ be a set of nodes. We say that $B$ is a dispensible set or a \emph{\textbf{DSet}} iff:
+Let $(V, Q)$ be a FBAS and $B \subseteq V$ be a set of nodes. We say that $B$ is a dispensable set or a \emph{\textbf{DSet}} iff:
 \begin{packed_item1}
 \item $(V, Q)^B$ has QI \qquad\qquad\qquad\qquad\ (Intersection)
 \item $V \setminus B$ is a quorum OR $B = V$ \qquad (Availability)
 \end{packed_item1}
 \end{defin}
+As explained by Mazi\`eres, availability protects against nodes in $B$ not replying to requests or impeding other nodes' progress. QI protects against nodes in $B$ making contradictory assertions that enable other nodes to externalize inconsistent values for the same slot. These two threats depend on slice size in opposite ways: greater slices increase the chance for QI, but also the chance that they will contained failed nodes, impacting availability. Smaller slices decrease the chance of failed nodes, but also the likelihood of having QI.
+
+The smallest DSet containing all ill-behaved nodes may contain also well-behaved nodes as well, if they depend on the ill-behaved ones. For example, in Figure \ref{fig:example2} if $v_5$ and $v_6$ are ill-behaved the smallest DSet would need to include also $v_9$ and $v_{10}$ since the lowest tier depends on any 2 of the nodes in the middle tier, and so it may depend on the two that are ill-behaved.
+
 
 
 
