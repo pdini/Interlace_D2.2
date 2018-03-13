@@ -1,5 +1,5 @@
 \chapter{Analysis of Possible Blockchain Technologies for INTERLACE}
-\label{ch:DLTs}
+\label{ch:dlt}
 
 \vspace{-1cm}
 \begin{center}
@@ -15,17 +15,13 @@ The INTERLACE team has looked at a number of blockchain technologies:
 \item Quorum (permissioned Ethereum)
 \item Hyperledger Fabric
 \end{packed_item1}
-In this chapter we analyse and discuss them in turn, emphasising the algorithmic, architectural,  mathematical, or financial aspects that are most pertinent to INTERLACE. The frameworks that have made it into this short list are all interesting for one reason or another, and at different points each of them was seriously taken into consideration for adoption. The one that comes closest to the requirements of the Sardex mutual credit system is Hyperledger. Therefore, after presenting and discussing the others Hyperledger will be analysed and presented in more detail. This will then form the basis for Chapter \ref{BlockchainSpec}, the blockchain specification chapter.
-
-
-
-
+In this chapter we analyse and discuss them in turn, emphasising the algorithmic, architectural,  mathematical, or financial aspects that are most pertinent to INTERLACE. The frameworks that have made it into this short list are all interesting for one reason or another, and at different points each of them was seriously taken into consideration for adoption. The one that comes closest to the requirements of the Sardex mutual credit system is Hyperledger. Therefore, after presenting and discussing the others Hyperledger will be analysed and presented in more detail. This will then form the basis for Chapter \ref{ch:bchain}, the blockchain specification chapter.
 
 \section{Stellar}
 \subsection{Introduction}
 In this section we provide a mathematical summary of the Stellar Consensus Protocol (SCP) \cite{Mazieres2016}. The presentation involves a sequence of definitions interspersed with theorems and their proofs. Understanding the theorems and their proofs is essential to understanding the Stellar system and the SCP. Therefore, although we follow Mazi\`eres's paper \cite{Mazieres2016} very closely, we provide more elementary explanations of the mathematical formulation, relying on figures and diagrams created ad hoc as needed.
 
-SCP is based on a new decentralized agreement system, also defined and developed in \cite{Mazieres2016}, called Federated Byzantine Agreement System (FBAS). FBAS and SCP, together, provide an alternative to Bitcoin's Proof of Work (PoW) \cite{Antonopoulos2015} or Ethereum's Proof of Stake (PoS) \textcolor{red}{[refs]} to achieve consensus. FBAS is a generalization of Byzantine agreement \textcolor{red}{[refs]}, where the latter is analogous to a permissioned system. Although the early implementation of the new Sardex INTERLACE platform will be permissioned, we wish to develop an architecture that can easily replace centralized control with local consistency between transacting parties. At the level above in the network hierarchy, we will also need to manage a federated network of circuits. Also here the capability to transition to a scalable decentralized architecture is preferable to a traditional centralized approach, although at this level Corda may be a more appropriate Distributed Ledger Technology (DLT) framework, as discussed in Section \ref{corda}.
+SCP is based on a new decentralized agreement system, also defined and developed in \cite{Mazieres2016}, called Federated Byzantine Agreement System (FBAS). FBAS and SCP, together, provide an alternative to Bitcoin's Proof of Work (PoW) \cite{Antonopoulos2015} or Ethereum's Proof of Stake (PoS) \textcolor{red}{[refs]} to achieve consensus. FBAS is a generalization of Byzantine agreement \textcolor{red}{[refs]}, where the latter is analogous to a permissioned system. Although the early implementation of the new Sardex INTERLACE platform will be permissioned, we wish to develop an architecture that can easily replace centralized control with local consistency between transacting parties. At the level above in the network hierarchy, we will also need to manage a federated network of circuits. Also here the capability to transition to a scalable decentralized architecture is preferable to a traditional centralized approach, although at this level Corda may be a more appropriate Distributed Ledger Technology (DLT) framework.
 
 \subsection{Federated Byzantine Agreement System}
 \subsubsection{Basic Components\\}
@@ -44,7 +40,7 @@ When node $v$ has safely applied update $x$ in slot $i$ we say that $v$ has \emp
 \end{defin}
 The reason for this term is that once the contents of a slot have been accepted by other nodes they (the other nodes) could perform irreversible actions as a consequence, which $v$ cannot do anything about: the contents are now outside or \emph{external} to the control of the originator node $v$.
 
-A challenge for FBA is that malicious nodes can outnumber honest ones, such that determining a quorum by simple majority is not sufficient to guarantee safety. FBA selects quorums in a decentralized way, leading to a layering of the network into a hierarchy such that different structures are relevant at different levels, as shown in Figure \ref{fig:vqQUV}. The top level is provided by a set of nodes $V$. The second level is called a `quorum', denoted by $U$ and defined as a set of nodes sufficient \emph{for those nodes} to reach agreement. The level below is a set of `slices' of a given node $v$, written $Q(v)$, where a slice is a subset of a quorum whose nodes agree with that \emph{single} node $v$. As the figure shows, a node $v$ may belong to more than one slice, with $Q(v)$ providing a quantification. We now provide formal definitions and mathematical relations between these quantities.
+A challenge for FBA is that malicious nodes can outnumber honest ones, such that determining a quorum by simple majority is not sufficient to guarantee safety. FBA selects quorums in a decentralized way, leading to a layering of the network into a hierarchy such that different structures are relevant at different levels, as shown in Figure \ref{fig:vqQUV}. The top level is provided by a set of nodes $V$. The second level is called a `quorum', denoted by $U$ and defined as a set of nodes sufficient \emph{for those nodes} to reach agreement. The level below is a set of `slices' of a given node $v$, written $Q(v)$, where a slice is a subset of a quorum whose nodes agree with that \emph{single} node $v$. As the figure shows, a node $v$ may belong to more than one slice, with the cardinality of $Q(v)$ (i.e.\ $|Q(v)|$) providing the quantification. We now provide formal definitions and mathematical relations between these quantities.
 
 \begin{figure}[h]
 \centering
