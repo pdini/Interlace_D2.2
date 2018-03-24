@@ -21,7 +21,7 @@ In this chapter we analyse and discuss them in turn, emphasising the algorithmic
 \subsection{Introduction}
 In this section we provide a mathematical summary of the Stellar Consensus Protocol (SCP) \cite{Mazieres2016}. The presentation involves a sequence of definitions interspersed with theorems and their proofs. Understanding the theorems and their proofs is essential to understanding the Stellar system and the SCP. Therefore, although we follow Mazi\`eres's paper \cite{Mazieres2016} very closely, we provide more elementary explanations of the mathematical formulation, relying on figures and diagrams created ad hoc as needed.
 
-SCP is based on a new decentralized agreement system, also defined and developed in \cite{Mazieres2016}, called Federated Byzantine Agreement System (FBAS). FBAS and SCP, together, provide an alternative to Bitcoin's Proof of Work (PoW) \cite{Antonopoulos2015} or Ethereum's Proof of Stake (PoS) \textcolor{red}{[refs]} to achieve consensus. FBAS is a generalization of Byzantine agreement \textcolor{red}{[refs]}, where the latter is analogous to a permissioned system. Although the early implementation of the new Sardex INTERLACE platform will be permissioned, we wish to develop an architecture that can easily replace centralized control with local consistency between transacting parties. At the level above in the network hierarchy, we will also need to manage a federated network of circuits. Also here the capability to transition to a scalable decentralized architecture is preferable to a traditional centralized approach, although at this level Corda may be a more appropriate Distributed Ledger Technology (DLT) framework.
+SCP is based on a new decentralized agreement system, also defined and developed in \cite{Mazieres2016}, called Federated Byzantine Agreement System (FBAS). FBAS and SCP, together, provide an alternative to Bitcoin's Proof of Work (PoW) \cite{Antonopoulos2015} or Ethereum's Proof of Stake (PoS)\footnote{\url{https://github.com/ethereum/wiki/wiki/Proof-of-Stake-FAQ}} to achieve consensus. FBAS is a generalization of Byzantine agreement,\footnote{\url{https://en.wikipedia.org/wiki/Byzantine_fault_tolerance}} where the latter is analogous to a permissioned system. Although the early implementation of the new Sardex INTERLACE platform will be permissioned, we wish to develop an architecture that can easily replace centralized control with local consistency between transacting parties. At the level above in the network hierarchy, we will also need to manage a federated network of circuits. Also here the capability to transition to a scalable decentralized architecture is preferable to a traditional centralized approach, although at this level Corda may be a more appropriate Distributed Ledger Technology (DLT) framework.
 
 \subsection{Federated Byzantine Agreement System}
 \subsubsection{Basic Components\\}
@@ -71,6 +71,7 @@ which reads `For all nodes $v$ members of the set $V$ and for all slices $q$ mem
 A Federated Byzantine Agreement System \emph{(\textbf{FBAS})} is a pair $(V, Q)$.
 \end{defin}
 \begin{defin}
+\label{quorum}
 A set of nodes $U \subseteq V$ in a FBAS $(V, Q)$ is a \emph{\textbf{quorum}} iff $U \ne \emptyset$ and $U$ contains a slice for each member:
 \begin{align}
 \forall v \in U, \exists q \in Q(v) \ | \  q \subseteq U.
@@ -78,9 +79,12 @@ A set of nodes $U \subseteq V$ in a FBAS $(V, Q)$ is a \emph{\textbf{quorum}} if
 \end{defin}
 In English: for all $v$ members of a quorum $U$, there exists a slice $q$, member of $Q(v)$, such that the slice is a subset of, or equal to, the quorum $U$. A quorum can also be described as a set of nodes sufficient to reach agreement.
 \begin{defin}
+\label{quorumslice}
 A \emph{\textbf{quorum slice}} $q$ is a subset of a quorum $U$ sufficient to convince a particular node $v$ of agreement.
 \end{defin}
-Therefore, a quorum slice is usually smaller than a quorum, as shown in the figures above. The `convincing' is depicted graphically by an arrow that indicates dependence between nodes in a manner analogous to inheritance in UML class diagrams. For example, as shown in Figure \ref{fig:convincing}a, $v_2$ can convince $v_1$ but not vice versa, i.e.\ $v_1$ depends on itself and on $v_2$ while $v_2$ depends only on itself. Figure \ref{fig:convincing}b shows the corresponding slices. Note that in this simple case the quorum of this set of nodes $V = \{ v_1, v_2 \}$ equals the slice for $v_1$: $V = U = q(v_1) = \{ v_1, v_2 \}$, whereas the set of slices $Q(v_1)$ is written $Q(v_1) = \{ \{ v_1, v_2 \} \}$, where the outer curly brackets indicate the set of slices $Q(v_1)$ and the inner curly brackets indicate the slice $q_1 = q(v_1)$.
+Therefore, a quorum slice is usually smaller than a quorum, as shown in the figures above.
+
+The `convincing' is depicted graphically by an arrow that indicates dependence between nodes in a manner analogous to inheritance in UML class diagrams. For example, as shown in Figure \ref{fig:convincing}a, $v_2$ can convince $v_1$ but not vice versa, i.e.\ $v_1$ depends on itself and on $v_2$ while $v_2$ depends only on itself. Figure \ref{fig:convincing}b shows the corresponding slices. Note that in this simple case the quorum of this set of nodes $V = \{ v_1, v_2 \}$ equals the slice for $v_1$: $V = U = q(v_1) = \{ v_1, v_2 \}$, whereas the set of slices $Q(v_1)$ is written $Q(v_1) = \{ \{ v_1, v_2 \} \}$, where the outer curly brackets indicate the set of slices $Q(v_1)$ and the inner curly brackets indicate the slice $q_1 = q(v_1)$.
 
 \begin{figure}[h]
 \centering
@@ -90,7 +94,7 @@ Therefore, a quorum slice is usually smaller than a quorum, as shown in the figu
 \end{figure}
 
 \subsubsection{Examples\\}
-Figure \ref{fig:example1} shows a more complex interdependence between a set of 4 nodes as Example 1. The arrows imply that $v_2$, $v_3$, and $v_4$ each has the same slice, e.g.\ $Q(v_2) = \{\{ v_2, v_3, v_4 \} \}$. In this example, although $\{\{ v_2, v_3, v_4 \} \}$ is a quorum, the smallest quorum involving $v_1$ must involve all four nodes.
+Figure \ref{fig:example1} shows a more complex interdependence between a set of 4 nodes, as Example 1. The arrows imply that $v_2$, $v_3$, and $v_4$ each has the same slice. Thus, $q(v_1) = q(v_2) = q(v_3) = \{ v_2, v_3, v_4 \}$. In this case we also have that $Q(v_2) = Q(v_3) = Q(v_4) = \{\{ v_2, v_3, v_4 \} \}$. In this example, although $\{\{ v_2, v_3, v_4 \} \}$ is a quorum, the smallest quorum involving $v_1$ must involve all four nodes.
 
 \begin{figure}[h]
 \centering
@@ -113,19 +117,27 @@ The important point made by Mazi\`eres is that whereas BAS is not scalable, as e
 \small
 \frame{\colorbox{light-gray}{\makebox[16.5cm]{\parbox{16.5cm}{
 %\vspace{.2cm}
-
 \begin{quote}
 \textbf{Example 2}
 
 It is worth discussing a second example from Mazi\`eres, as shown in Figure \ref{fig:example2}. The figure shows three new notational concepts:
-
 \vspace{.3cm}
 \begin{packed_item1}
 \item a reflexive dependence arrow can be drawn explicitly
 \item sets of nodes can be grouped explicitly into separate sets or tiers, and
 \item the dependence arrows can carry specific labels.
 \end{packed_item1}
-\vspace{.3cm}
+\end{quote}
+\vspace{.2cm}
+}}}}
+\end{center}
+
+\begin{center}
+\small
+\frame{\colorbox{light-gray}{\makebox[16.5cm]{\parbox{16.5cm}{
+%\vspace{.2cm}
+\begin{quote}
+\vspace{.2cm}
 For example, the label on the reflexive arrow on the top tier indicates that at least 3 nodes are needed for consensus. According to the definitions above for the arrow directions, the top tier does not depend on the tiers below, and it is precisely for this reason that it is the `top' tier. The label on the arrow between the middle and top tiers indicates that the slice of any one node from the middle tier is composed of itself plus any two of the tier above. The slice of either $v_9$ or $v_{10}$ is composed of itself plus any two nodes from the middle tier. Since each of these, in turn, depends on any two of the nodes of the top tier, the size of the slice will be at least 5 and at most 7 nodes.
 \end{quote}
 \vspace{-.5cm}
@@ -136,15 +148,6 @@ For example, the label on the reflexive arrow on the top tier indicates that at 
 \caption{\bf \small Three-tier network (After \cite{Mazieres2016})}
 \label{fig:example2}
 \end{figure}
-\vspace{-.3cm}
-}}}}
-\end{center}
-
-
-\begin{center}
-\small
-\frame{\colorbox{light-gray}{\makebox[16.5cm]{\parbox{16.5cm}{
-\vspace{.2cm}
 
 \begin{quote}
 In Figure \ref{fig:example2} the top tier according to Mazi\`eres could be composed by a number of global financial institutions. The middle tier could be sets of banks operating at national level, with a single such set corresponding to a single country shown here. The bottom tier would be a single branch office, with the nodes inside representing individual customer accounts.
@@ -161,7 +164,7 @@ In Figure \ref{fig:example2} the top tier according to Mazi\`eres could be compo
 
 \begin{quote}
 \vspace{-.3cm}
-In Figure \ref{fig:example2_Sardex}, on the other hand, the top tier would be only the single Sardex S.p.A.\ company. The middle tier could be composed by different national jurisdictions each of which containing a set of circuits; the figure shows two such jurisdictions corresponding to two different countries. The bottom tier would then correspond to separate individual circuits, with the nodes corresponding to individual company accounts. There are no labels on the arrows because the dependence is to a specific node in every case, generating a centralized hierarchical network.
+In Figure \ref{fig:example2_Sardex}, on the other hand, the top tier would be only the single Sardex S.p.A.\ company. The middle tier could be composed by different national jurisdictions, each of which containing a set of circuits; the figure shows two such jurisdictions corresponding to two different countries. The bottom tier would then correspond to separate individual circuits, with the nodes corresponding to individual company accounts. There are no labels on the arrows because the dependence is to a specific node in every case, generating a centralized hierarchical network.
 \end{quote}
 \vspace{.2cm}
 }}}}
@@ -170,7 +173,7 @@ In Figure \ref{fig:example2_Sardex}, on the other hand, the top tier would be on
 Although the architecture of Figure \ref{fig:example2_Sardex} may correspond to an initial implementation of the INTERLACE platform, it does not make use of the distribution capability of the Stellar consensus protocol, so let's proceed with the development of the protocol to see what will become possible.
 
 \subsubsection{Safety and Liveness\\}
-Nodes can be either well-behaved or ill-behaved. A well-behaved node chooses sensible quorum slices and obeys the protocol, including responding (eventually) to all requests. Ill-behaved nodes suffer Byzantine failure, meaning that they behave arbitrarily due for example to a malicious modification of the software, or may have crashed. The goal of FBAS is to ensure that well-behaved nodes externalize the same values in spite of such ill-behaved nodes.
+Nodes can be either well-behaved or ill-behaved. A well-behaved node chooses sensible quorum slices and obeys the protocol, including responding (eventually) to all requests. Ill-behaved nodes suffer Byzantine failure, meaning that they behave arbitrarily due for example to a malicious modification of the software, or may have crashed. The goal of FBAS is to ensure that all well-behaved nodes externalize the same values in spite of such ill-behaved nodes.
 
 \begin{defin}
 Two nodes in a set $V$ are \emph{\textbf{divergent}} if they externalize different values to the same slot. A set $V$ of nodes in a FBAS is \emph{\textbf{safe}} if no two of its elements (nodes) externalize different values for the same slot.
@@ -181,7 +184,7 @@ A node $v \in V$ is \emph{\textbf{blocked}} if it is in some dead-end state from
 \begin{defin}
 Nodes that enjoy both safety and liveness are called \emph{\textbf{correct}}. Nodes that are not correct have \emph{\textbf{failed}}.
 \end{defin}
-Thus, nodes without liveness are blocked, whereas nodes without safety are divergent. Figure \ref{fig:correct} shows the set inclusion relationships between these different kinds of nodes in a set $V$. The reason divergent and blocked nodes are shown under the well-behaved category even though they have failed is that, unlike ill-behaved nodes, they may have started as a correct node but may fail if its choice of slice causes it to wait indefinitely for messages from an ill-behaved node (blocked) or, worse, if its state is maliciously modified by messages from an ill-behaved node (divergent). Thus, the reason divergent nodes are a subset of the blocked nodes is that an attack that violates safety is strictly more powerful that one that violates only liveness.
+Thus, nodes without liveness are blocked, whereas nodes without safety are divergent. Figure \ref{fig:correct} shows the set inclusion relationships between these different kinds of nodes in a set $V$. The reason a divergent or blocked node is shown under the well-behaved category even though it has failed is that, unlike ill-behaved nodes, it may have started as a correct node but may fail if its choice of slice causes it to wait indefinitely for messages from an ill-behaved node (this makes it {\bf blocked}) or, worse, if its state is maliciously modified by messages from an ill-behaved node (this makes it {\bf divergent}). Thus, the reason divergent nodes are a subset of the blocked nodes is that an attack that violates safety is strictly more powerful that one that violates only liveness.
 
 \begin{figure}[h]
 \centering
@@ -193,30 +196,32 @@ Thus, nodes without liveness are blocked, whereas nodes without safety are diver
 Mazi\`eres explains that the above definition of liveness is weak because it only says that a node \emph{can} externalize, not that it \emph{will} or \emph{must}. As a consequence, there is a possibility for consensus to be forever delayed by, for example, preemptive reordering of the transactions. It is not clear whether this issue matters in the case of INTERLACE since we will not implement a completely decentralized system: some level of centralized control is likely to remain. Mazi\`eres in any case provides relevant references that can be consulted if this issue needs to be analysed in depth and resolved in some robust way.
 
 \subsubsection{Optimal Resilience: Quorum Intersection and Dispensable Sets\\}
-As is commonly assumed for asynchronous systems, messages between well-behaved nodes are eventually delivered, but can otherwise be delayed indefinitely or reordered arbitrarily. This section starts becoming more involved because it addresses this non-trivial question: given a specific $(V, Q)$ and a subset of $V$ that is ill-behaved, what are the best levels of safety and liveness that a FBAS can guarantee in an arbitrary network?
+As is commonly assumed for asynchronous systems, messages between well-behaved nodes are eventually delivered, but can otherwise be delayed indefinitely or reordered arbitrarily. This section starts becoming more involved because it addresses the following non-trivial question: Given a specific $(V, Q)$ and a subset of $V$ that is ill-behaved, what are the best levels of safety and liveness that a FBAS can guarantee in an arbitrary network?
 
+\smallskip
 \begin{defin}
 A FBAS has \emph{\textbf{quorum intersection}} iff any two of its quorums share at least one node.\footnote{The term `iff' means `if and only if'. It implies that the causal dependence works in both directions, in contrast to merely `if' which works only in the reverse direction. In symbols, `A iff B' is written $A \Leftrightarrow B$, whereas `A if B' is written $B \Rightarrow A$ and is also read as `B implies A'.} In other words, $\forall U_i, U_j \in FBAS, U_i \cap U_j \ne 0$, where $i$ and $j$ range over the number of quorums for a given FBAS.
 \end{defin}
-Therefore, when a FBAS has many quorums, quorum intersection (QI) fails when \emph{any two} do not intersect. We remind the reader that $Q(v_i)$ is just the set of slices of a given node $v_i$ and, depending on the slices of all the other nodes $v_j \in Q(v_i)$, may or may not be a quorum $U \subseteq V$. Thus, although in the simple examples that follow each $Q(v)$ is a quorum, this is by no means the case in general.
+
+Therefore, when a FBAS has many quorums, quorum intersection (QI) fails when \textbf{\textit{any two}} do not intersect. We remind the reader that $Q(v_i)$ is just the set of slices of a given node $v_i$ and, depending on the slices of all the other nodes $v_j \in Q(v_i)$, may or may not be a quorum $U \subseteq V$. Thus, although in the simple examples that follow each $Q(v)$ is a quorum, this is by no means the case in general.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=14 cm]{Figures/QI1}
+\includegraphics[width=15 cm]{Figures/QI1}
 \caption{\bf \small A set of nodes without QI. (After \cite{Mazieres2016})}
 \label{fig:QI1}
 \end{figure}
 
-Figure \ref{fig:QI1} shows a system of 6 nodes that lacks QI, since the function $Q$ allows two quorums on the set of 6 nodes that do not intersect. Mazi\`eres says that the two quorums can separately agree on contradictory statements, which makes sense at an abstract level but not so much in the case of this example. In other words, if $v_5$ cannot communicate with $v_1$ how can it say something about $v_1$ that $v_1$ might not agree with? The answer is that the whole set of all nodes $\{ v_1, \cdots, v_6 \}$ is \emph{also} a quorum, which in this case we can call $U$, and it intersects the other two. So this is an example of a system that has multiple quorums but two of them do not intersect and, therefore, the system does not have QI.
-
-Safety cannot be guaranteed because such a system can operate like two separate FBAS systems that do not communicate. However, safety may not be possible even in a system with QI, like the one shown in Figure \ref{fig:QI2}, if the intersecting node is ill-behaved. If $v_7$ makes inconsistent statements to the left and right quorums they are as good as disconnected. Therefore, safety can be guaranteed only if the well-behaved nodes have QI; or, put otherwise, a FBAS $(V, Q)$ can survive Byzantine failure by a set $B \subseteq V$ iff $(V, Q)$ has QI after deleting the nodes in $B$ from $V$ and from all slices in $Q$. 
+Figure \ref{fig:QI1} shows a system of 6 nodes that lacks QI, since the function $Q$ allows two quorums on the set of 6 nodes that do not intersect. Mazi\`eres says that the two quorums can separately agree on contradictory statements, which makes sense at an abstract level but not so much in the case of this example. In other words, if $v_5$ cannot communicate with $v_1$ how can it say something about $v_1$ that $v_1$ might not agree with? We will not have a satisfactory answer until we know more about what different nodes can say about each other, and how. In the meantime, what Mazi\`eres says is partly helpful. Namely, he says that the whole set of all nodes $\{ v_1, \cdots, v_6 \}$ is \emph{also} a quorum, which in this case we can call $U$, and it intersects the other two. Is this true? If we look back at the definition of a quorum (Definition \ref{quorum}), we can verify that yes, it is correct because each node has a slice that is part of $U$. So this is an example of a system that has multiple quorums but two of them do not intersect and, therefore, the system does not have QI. We can believe that there is no certainty that $v_1$ can contradict or agree with $v_5$ even though they both belong to $U$.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=14 cm]{Figures/QI2}
+\includegraphics[width=15 cm]{Figures/QI2}
 \caption{\bf \small A set of nodes with QI. (After \cite{Mazieres2016})}
 \label{fig:QI2}
 \end{figure}
+
+Safety cannot be guaranteed because such a system can operate like two separate FBAS systems that do not communicate. However, safety may not be possible even in a system with QI, like the one shown in Figure \ref{fig:QI2}, if the intersecting node is ill-behaved. If $v_7$ makes inconsistent statements to the left and right quorums they are as good as disconnected. Therefore, safety can be guaranteed only if the well-behaved nodes have QI; or, put otherwise, a FBAS $(V, Q)$ can survive Byzantine failure by a set $B \subseteq V$ iff $(V, Q)$ has QI after deleting the nodes in $B$ from $V$ and from all slices in $Q$. 
 
 More formally,
 \begin{defin}
@@ -225,7 +230,7 @@ If $(V, Q)$ is a FBAS and $B \subseteq V$ is a set of nodes, then to \emph{\text
 Q^B(v) = \{ q \setminus B\ |\ q \in Q(v) \},		\qquad \forall v \in V \setminus B.
 \end{align}
 \end{defin}
-It is the responsibility of each node $v$ to ensure that $Q(v)$ does not violate QI. From Mazi\`eress paper it is not clear how, however. Be that as it may, assume that Figure \ref{fig:QI2} evolved from the 3-node FBAS $\{ v_1, v_2, v_3 \}$ to a system that includes also $\{ v_4, v_5, v_6 \}$. Assume now that $\{ v_4, v_5, v_6 \}$ are malicious such that they choose slices that do not satisfy QI. But $Q(v)$ is meaningless for a malicious node. That's why the necessary condition for safety, QI after deleting ill-behaved nodes, is unaffected by the slices of ill-behaved nodes. The system $(V, Q)^{ \{ v_4, v_5, v_6 \} }$ restores QI for $\{ v_1, v_2, v_3 \}$. Note that we have not yet said how such deletion takes place. For now we just say that the protocol must guarantee safety for $\{ v_1, v_2, v_3 \}$ without these nodes having to know that $\{ v_4, v_5, v_6 \}$ are malicious.
+It is the responsibility of each node $v$ to ensure that $Q(v)$ does not violate QI. From Mazi\`eress paper it is not clear {\bf how}, however. Be that as it may, assume that Figure \ref{fig:QI2} evolved from the 3-node FBAS $\{ v_1, v_2, v_3 \}$ to a system that includes also $\{ v_4, v_5, v_6 \}$. Assume now that $\{ v_4, v_5, v_6 \}$ are malicious such that they choose slices that do not satisfy QI. But $Q(v)$ is meaningless for a malicious node. That's why the necessary condition for safety, QI after deleting ill-behaved nodes, is unaffected by the slices of ill-behaved nodes. The system $(V, Q)^{ \{ v_4, v_5, v_6 \} }$ restores QI for $\{ v_1, v_2, v_3 \}$. Note that we have not yet said how such deletion takes place. For now we just say that the protocol must guarantee safety for $\{ v_1, v_2, v_3 \}$ without these nodes having to know that $\{ v_4, v_5, v_6 \}$ are malicious.
 
 Turning now to dispensable sets or DSets, the safety and liveness of the nodes outside a DSet can  be guaranteed regardless of the behaviour of the nodes inside the DSet.
 \begin{defin}
@@ -235,21 +240,35 @@ Let $(V, Q)$ be a FBAS and $B \subseteq V$ be a set of nodes. We say that $B$ is
 \item $V \setminus B$ is a quorum OR $B = V$ \qquad (Availability)
 \end{packed_item1}
 \end{defin}
-As explained by Mazi\`eres, availability protects against nodes in $B$ not replying to requests or impeding other nodes' progress. QI protects against nodes in $B$ making contradictory assertions that enable other nodes to externalize inconsistent values for the same slot. These two threats depend on slice size in opposite ways: greater slices increase the chance for QI, but also the chance that they will contained failed nodes, impacting availability. Smaller slices decrease the chance of failed nodes, but also the likelihood of having QI.
+As explained by Mazi\`eres, availability protects against nodes in $B$ not replying to requests or impeding other nodes' progress. QI protects against nodes in $B$ making contradictory assertions that enable other nodes to externalize inconsistent values for the same slot. These two threats depend on slice size in opposite ways: greater slices increase the chance for QI, but also the chance that they will contain failed nodes, impacting availability. Smaller slices decrease the chance of failed nodes, but also the likelihood of having QI.
 
 The smallest DSet containing all ill-behaved nodes may contain also well-behaved nodes as well, if they depend on the ill-behaved ones. For example, in Figure \ref{fig:example2} if $v_5$ and $v_6$ are ill-behaved the smallest DSet would need to include also $v_9$ and $v_{10}$ since the lowest tier depends on any 2 of the nodes in the middle tier, and so it may depend on the two that are ill-behaved.
 
+\begin{defin}
+\label{intact}
+A node $v \in FBAS$ is \emph{\textbf{intact}} iff $\exists\  DSET\  B$ containing all ill-behaved nodes and such that $v \notin B$.
+\end{defin}
 
+\begin{defin}
+\label{befouled}
+A node $v \in FBAS$ is \emph{\textbf{befouled}} iff it is not intact.
+\end{defin}
 
-
-
-
-
-
-
-
-
-
+\begin{theorem}
+\label{theorem1}
+Let $U$ be a quorum in FBAS $(V, Q)$, let $B \subseteq V$, and let $U' = U \setminus B$. If $U' \neq \emptyset$, then $U'$ is a quorum in $(V, Q)^B$.
+\end{theorem}
+\begin{proof}
+First, since $U$ is a quorum, every $v \in U$ has a slice $q \in Q(v)$ such that $q \in U$:
+\begin{align}
+\exists q \in Q(v) | q\in U, \qquad \forall v \in U.
+\end{align}
+Second, since $U' \subseteq U$, every $v \in U'$ has $q \in Q(v)$ such that $q \setminus B \subseteq U'$:
+\begin{align}
+\exists q \in Q^B(v) | q \in U', \qquad \forall v \in U'.
+\end{align}
+Therefore, $U'$ is a quorum in $(V, Q)^B$.
+\end{proof}
 
 
 
