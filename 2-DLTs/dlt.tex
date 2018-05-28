@@ -354,7 +354,7 @@ If we are not at these two extremes, as just stated above by quorum availability
 Let $U = U_1 \cap U_2$ (see Figure \ref{fig:Thm2_U1_U_U2}B). Note that $U$ also equals $U_2 \setminus B_1$  and $U_1 \setminus B_2$. By the definition of QI (Definition \ref{QI}), $U_1 \cap U_2 \ne \emptyset$. Then by Theorem \ref{theorem1} $U_1 \cap U_2 = U_2 \setminus B_1$ is a quorum in $(V, Q)^{B_1}$. In other words, Figure \ref{fig:Thm2_U1_U_U2}B is a quorum in Figure \ref{fig:Thm2_U1_U2}A.
 
 \vspace{0.3cm}
-$*$Let $U_a$ and $U_b$ be two quorums in $(V, Q)^B = U_1 \cup U_2$:
+$*$Let $U_a$ and $U_b$ be two quorums in $(V, Q)^B = U_1 \cup U_2$. We begin the analysis by working with $U_a$, and repeat the argument later for $U_b$.
 \vspace{0.3cm}
 \begin{packed_item1}
 \item If $U_a \setminus B_1 = \emptyset$, $U_a$ must be at most $\subseteq B_1$ (but not include $B$, by construction)
@@ -368,7 +368,7 @@ Now whether or not $B_1$ and $B_2$ are quorums is not relevant to the argument s
 U_a \setminus B_1 \ne \emptyset \qquad \text{\bf OR} \qquad U_a \setminus B_2 \ne \emptyset.
 \end{align}
 
-This implies that there are now three possibilities:
+This implies that there are now three possibilities for $U_a$:
 \vspace{0.3cm}
 \begin{packed_enumerate}
 \item $U_a \setminus B_1$ is a quorum in $\big( (V, Q)^B \big)^{B_1} = (V, Q)^{B_1}$
@@ -376,38 +376,59 @@ This implies that there are now three possibilities:
 \item Both, i.e.\ the quorum is outside of both $B_1$ and $B_2$.
 \end{packed_enumerate}
 \vspace{0.3cm}
-If 1) is true, then $(U_a \setminus B_1) \cap U \ne \emptyset$, by QI of $(V, Q)^{B_1}$.\footnote{$(V, Q)^{B_1}$ has QI because $B_1$ is a DSet. And $B_1$ is a DSet by construction.} Let us revisit why:
+What we show next is that if 1) is true, then 2) is true too, and vice versa. Therefore, since we have ruled out all other possibilities, the next few lines will show that the \emph{only} possibility left is 3).
 
 \vspace{0.3cm}
-\makebox[\textwidth][c]{
-\begin{minipage}{.5\textwidth}
--- $U = U_1 \cap U_2 = (V \setminus B_1) \cap (V \setminus B_2) = V \setminus (B_1 \cup B_2)$.
-
--- Therefore, $U \subseteq V \setminus B_1$
-
--- We have already seen that $U$ is a quorum in $(V, Q)^{B_1}$
-
--- $U_a \setminus B_1$ is a quorum by Theorem \ref{theorem1}
-
--- Therefore, $(V, Q)^{B_1}$ has QI.
-\end{minipage}
-}
-
-\medskip
+If 1) is true, then $(U_a \setminus B_1) \cap U \ne \emptyset$, by QI of $(V, Q)^{B_1}$.
+In fact, since $B_1$ is a DSet by construction, $(V, Q)^{B_1}$ has QI. And since $(U_a \setminus B_1)$ and $U$ are both quorums, by definition of QI their intersection is not empty.
+%%% The following is NOT the reason why $(V, Q)^{B_1}$ has QI. It is merely consistent with the fact that it does. In other words, it is necessary but not sufficient. Therefore, I am commenting this out:
+%\vspace{0.3cm}
+%\makebox[\textwidth][c]{
+%\begin{minipage}{.5\textwidth}
+%Let us revisit why:\\
+%-- $U = U_1 \cap U_2 = (V \setminus B_1) \cap (V \setminus B_2) = V \setminus (B_1 \cup B_2)$.\\
+%-- Therefore, $U \subseteq V \setminus B_1$\\
+%-- We have already seen that $U$ is a quorum in $(V, Q)^{B_1}$\\
+%-- $U_a \setminus B_1$ is a quorum by Theorem \ref{theorem1}\\
+%-- Therefore, $(V, Q)^{B_1}$ has QI.
+%\end{minipage}
+%}
 Now, $(U_a \setminus B_1) \cap U$ happens to equal $(U_a \setminus B_1) \setminus B_2$. Therefore, $(U_a \setminus B_1) \setminus B_2 \ne \emptyset$. If that is the case, then even more
-$U_a \setminus B_2 \ne \emptyset$. Therefore, $U_a \setminus B_2$ is a quorum in $(V, Q)^{B_2}$.
+$U_a \setminus B_2 \ne \emptyset$. Therefore, by Theorem \ref{theorem1} $U_a \setminus B_2$ is a quorum in $(V, Q)^{B_2}$.
 
 \vspace{0.3cm}
-[Similarly, if 2) is true, then $U_a \setminus B_1$ is a quorum in $(V, Q)^{B_1}$.]
+Similarly, if 2) is true, then $(U_a \setminus B_2) \cap U \ne \emptyset$, by QI of $(V, Q)^{B_2}$, since $B_2$ is also a DSet. Since $(U_a \setminus B_2) \cap U = (U_a \setminus B_2) \setminus B_1$, $(U_a \setminus B_2) \setminus B_1 \ne \emptyset$, and $U_a \setminus B_1 \ne \emptyset$ either. Therefore, by Theorem \ref{theorem1} $U_a \setminus B_1$ is a quorum in $(V, Q)^{B_1}$.
 
 \vspace{0.3cm}
-Now go back to $*$ and follow the same argument for 1) $U_b \setminus B_1$, 2) etc, reaching the conclusion for case 1) that $U_b \setminus B_2$ is a quorum in $(V, Q)^{B_2}$. But then by QI despite $B_2$
+Therefore, 3) is the only possibility left. Knowing this helps a global understanding of all the possibilities, but we have actually done more work than was strictly necessary to prove the theorem. All we need to focus on is 1): $U_a \setminus B_2$ is a quorum in $(V, Q)^{B_2}$.
+
+\vspace{0.3cm}
+Now go back to $*$ and follow the same argument for $U_b$. Look at the possibility 1) that
+$U_b \setminus B_1$ is a quorum. Following the same argument we can show that this implies that $U_b \setminus B_2$ is a quorum in $(V, Q)^{B_2}$. But then, by QI despite $B_2$, we necessarily have that
 \begin{align}
 (U_a \setminus B_2) \cap (U_b \setminus B_2) \ne \emptyset.
 \end{align}
-Hence, $U_a \cap U_b \ne \emptyset$. Since $U_a$ and $U_b$ are any two quorums in $(V, Q)^B$, we have proven QI despite $B$. Hence $B$ is a DSET.
+If that's true, $U_a \cap U_b \ne \emptyset$ is even more so. Since $U_a$ and $U_b$ are any two quorums in $(V, Q)^B$, we have proven QI despite $B$. Hence $B$ is a DSET.
 \end{case}
 \vspace{-0.5cm}
+\end{proof}
+\end{quote}
+
+The above theorem may seem ``much ado about nothing'', but in fact it has shown a rather important general fact, namely that DSets are closed under intersection. We use this fact immediately, in the next theorem.
+
+
+
+\begin{quote}
+\small
+\begin{theorem}
+\label{theorem3}
+In a FBAS with QI, the set of befouled nodes is a DSet.
+\end{theorem}
+\begin{proof}
+In the definition of DSet we did not specify whether the nodes contained in a DSet were ill-behaved, blocked, divergent, or correct. We only said that what's left after we take a DSet is a quorum and, in addition, it has QI (if it happens to contain other quorums).
+
+\vspace{0.3cm}
+Now let a FBAS contain an arbitrary number of DSets, such that each DSet may contain a number of ill-behaved nodes. Let $B_{min}$ be the specific intersection of these DSets that contains all the ill-behaved nodes. According to Definition \ref{intact}, a node $v$ is intact iff $v \notin B_{min}$. Therefore, $B_{min}$ is the set of befouled nodes. By Theorem \ref{theorem2}, $B_{min}$ is a DSet.
 \end{proof}
 \end{quote}
 
