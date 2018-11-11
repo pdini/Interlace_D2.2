@@ -1,0 +1,427 @@
+\chapter*{Basic Mathematical Framework for Stellar}
+\label{ch:stellar}
+
+\vspace{-1cm}
+\begin{center}
+Paolo Dini
+\end{center}
+
+\section{Introduction}
+In this Appendix we provide a mathematical summary of the Stellar Consensus Protocol (SCP) \cite{Mazieres2016}. The presentation involves a sequence of definitions interspersed with theorems and their proofs. Understanding the theorems and their proofs is essential to understanding the Stellar system and the SCP. Therefore, although we follow Mazi\`eres's paper \cite{Mazieres2016} very closely, in some cases we provide more elementary explanations of the mathematical formulation, relying on figures and diagrams created ad hoc as needed.
+
+SCP is based on a new decentralized agreement system, also defined and developed in \cite{Mazieres2016}, called Federated Byzantine Agreement System (FBAS). FBAS and SCP, together, provide an alternative to Bitcoin's Proof of Work (PoW) \cite{Antonopoulos2015} or Ethereum's Proof of Stake (PoS)\footnote{\url{https://github.com/ethereum/wiki/wiki/Proof-of-Stake-FAQ}} to achieve consensus. FBAS is a generalization of Byzantine agreement,\footnote{\url{https://en.wikipedia.org/wiki/Byzantine_fault_tolerance}} where the latter is analogous to a permissioned system. Although the early implementation of the new Sardex INTERLACE platform will be permissioned, we wish to develop an architecture that can easily replace centralized control with local consistency between transacting parties. At the level above in the network hierarchy, we will also need to manage a federated network of circuits. Also here the capability to transition to a scalable decentralized architecture is preferable to a traditional centralized approach, although at this level Corda may be a more appropriate Distributed Ledger Technology (DLT) framework.
+
+\section{Federated Byzantine Agreement System}
+\subsection{Basic Components}
+
+A Stellar network relies on a FBAS to achieve consensus in the absence of central control. The consensus is on the update of replicated states such as ledger records corresponding to transactions. The purpose of the consensus protocol is for a set of nodes to reach agreement on a given update. Each update is identified with a unique \emph{slot} which also encodes information on inter-update dependencies -- for example as consecutively numbered positions in a transaction ledger. A FBAS runs a SCP that ensures that the nodes agree on slot contents. Agreement is defined in terms of safety of operation; the definition is somewhat recursive so it may need to be refined later:
+\begin{quote}
+\vspace{-0.8cm}
+\small
+\begin{defin}
+We say that a node $v$ can \emph{\bf safely} apply update $x$ in slot $i$ when
+\begin{packed_item1}
+\item it has safely applied all the updates in all the slots upon which $i$ depends, and
+\item it believes all correctly functioning nodes will eventually agree on $x$ for slot $i$.
+\end{packed_item1}
+\end{defin}
+\smallskip
+\begin{defin}
+When node $v$ has safely applied update $x$ in slot $i$ we say that $v$ has \emph{\bf externalized} $x$ for slot $i$.
+\end{defin}
+\end{quote}
+The reason for this term is that once the contents of a slot have been accepted by other nodes they (the other nodes) could perform irreversible actions as a consequence, which $v$ cannot do anything about: the contents are now outside or \emph{external} to the control of the originator node $v$.
+
+A challenge for FBA is that malicious nodes can outnumber honest ones, such that determining a quorum by simple majority is not sufficient to guarantee safety. FBA selects quorums in a decentralized way, leading to a layering of the network into a hierarchy such that different structures are relevant at different levels, as shown in Figure \ref{fig:vqQUV}. The top level is provided by a set of nodes $V$. The second level is called a `quorum', denoted by $U$ and defined as a set of nodes sufficient \emph{for those nodes} to reach agreement. The level below is a set of `slices' of a given node $v$, written $Q(v)$, where a {\bf slice} is a subset of a quorum whose nodes agree with that \emph{single} node $v$. As the figure shows, a node $v$ may belong to more than one slice, with the cardinality of $Q(v)$ (i.e.\ $|Q(v)|$) providing the quantification. We now provide formal definitions and mathematical relations between these quantities.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=7 cm]{Figures/vqQUV}
+\caption{\bf \small The five levels of a Stellar network or FBAS}
+\label{fig:vqQUV}
+\end{figure}
+
+Using the usual notation $2^X$ for the power set\footnote{The power set of a set $X$ is the set of all possible subsets of $X$ \cite{Cameron2008}. For a set of $N$ elements, its power set turns out to have $2^N$ elements, hence the notation.} of the set $X$, $2^V$ is the power set of $V$, i.e.\ the set of all possible quorum slices. At the next level, $2^{2^V}$ is the power set of quorum slices, i.e. the set of all possible \emph{sets} of quorum slices. Figure \ref{fig:SliceAndQ} shows a visualization of the elements of these kinds of power sets.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=15 cm]{Figures/SliceAndQ}
+\caption{\bf \small L: a) $q$ is an element of $2^V$. R: b) $Q(v)$ is an element of $2^{2^V}$.}
+\label{fig:SliceAndQ}
+\end{figure}
+
+The function $Q$ assigns to each node $v \in V$ a set of slices $\{ q_1, q_2, \cdots, q_k \}$. Here the curly brackets denote set and $k$ is the number of slices for a given node $v$. Formally,
+\begin{align}
+Q\colon V \rightarrow 2^{2^V} \setminus \emptyset,
+\end{align}
+where $\setminus \emptyset$ means that the empty set is not in the range of this function ($Q(v)$ can never be empty).\footnote{It is not immediately clear whether this is a consequence of how this function operates or whether it is a requirement that we are adding arbitrarily to ensure that it does what we need. \textcolor{red}{TBD.}} In general,
+\begin{align}
+\forall v \in V, \forall q \in Q(v), \qquad v \in q,
+\end{align}
+which reads `For all nodes $v$ members of the set $V$ and for all slices $q$ members of the set $Q(v)$, node $v$ is a member of some slice $q$'.
+\begin{quote}
+\vspace{-0.6cm}
+\small
+\begin{defin}
+A Federated Byzantine Agreement System \emph{(\textbf{FBAS})} is a pair $(V, Q)$.
+\end{defin}
+\begin{defin}
+\label{quorum}
+A set of nodes $U \subseteq V$ in a FBAS $(V, Q)$ is a \emph{\textbf{quorum}} iff $U \ne \emptyset$ and $U$ contains a slice for each member:
+\begin{align}
+\forall v \in U, \exists q \in Q(v) \ | \  q \subseteq U.
+\end{align}
+\end{defin}
+In English: for all $v$ members of a quorum $U$, there exists a slice $q$, member of $Q(v)$, such that the slice is a subset of, or equal to, the quorum $U$.
+\begin{defin}
+\label{quorumslice}
+A \emph{\textbf{quorum slice}} $q$ is a subset of a quorum $U$ sufficient to convince a particular node $v$ of agreement.
+\end{defin}
+\end{quote}
+Therefore, a quorum slice is usually smaller than a quorum, as shown in the figures above.
+
+The `convincing' is depicted graphically by an arrow that indicates dependence between nodes in a manner analogous to inheritance in UML class diagrams. For example, as shown in Figure \ref{fig:convincing}a, $v_2$ can convince $v_1$ but not vice versa, i.e.\ $v_1$ depends on itself and on $v_2$ while $v_2$ depends only on itself. Figure \ref{fig:convincing}b shows the corresponding slices. Note that in this simple case the quorum of this set of nodes $V = \{ v_1, v_2 \}$ equals the slice for $v_1$: $V = U = q(v_1) = \{ v_1, v_2 \}$, whereas the set of slices $Q(v_1)$ is written $Q(v_1) = \{ \{ v_1, v_2 \} \}$, where the outer curly brackets indicate the set of slices $Q(v_1)$ and the inner curly brackets indicate the slice $q_1 = q(v_1)$.
+
+\subsection{Examples}
+Figure \ref{fig:example1} shows a more complex interdependence between a set of 4 nodes, as Example 1. The arrows imply that $v_2$, $v_3$, and $v_4$ each has the same slice. Thus, $q(v_2) = q(v_3) = q(v_4) = \{ v_2, v_3, v_4 \}$. In this case we also have that $Q(v_2) = Q(v_3) = Q(v_4) = \{\{ v_2, v_3, v_4 \} \}$. In this example, although $\{\{ v_2, v_3, v_4 \} \}$ is a quorum, the smallest quorum involving $v_1$ must involve all four nodes.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=15 cm]{Figures/convincing}
+\caption{\bf \small L: a) $v_2$ can convince $v_1$ but not vice versa. R: b) The slices of $v_1$ and of $v_2$.}
+\label{fig:convincing}
+\end{figure}
+
+Figure \ref{fig:example1} also provides a clear example of the difference between a slice and a quorum. The slice of $v_1$ is $q(v_1) = \{ v_1, v_2, v_3 \}$, which means that these three nodes are all that's needed to convince $v_1$. However, this set of nodes cannot be a quorum because the slices of $v_2$ and $v_3$ include nodes (actually only one node, $v_4$) that are outside of this set, which contravenes Definition \ref{quorum}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=15 cm]{Figures/example1}
+\caption{\bf \small Example 1. L: a) The slices of this network. R: b) The smallest quorum involving $v_1$. (After \cite{Mazieres2016})}
+\label{fig:example1}
+\end{figure}
+
+In traditional, non-federated Byzantine systems all nodes have the same slices. Therefore, non-federated systems do not distinguish between slices and quorums:
+\begin{align}
+\forall v_i, v_j \in V, \qquad Q(v_i) = Q(v_j). \qquad\qquad \text{[BAS]} 
+\end{align}
+In our case, instead, in general we have that
+\begin{align}
+\forall v_i, v_j \in V, \qquad Q(v_i) \ne Q(v_j). \qquad\qquad \text{[FBAS]} 
+\end{align}
+The important point made by Mazi\`eres is that whereas BAS is not scalable, as exemplified by the huge CPU overhead the Bitcoin consensus protocol requires, FBAS is scalable.
+
+\begin{center}
+\small
+\frame{\colorbox{light-gray}{\makebox[16.5cm]{\parbox{16.5cm}{
+%\vspace{.2cm}
+\begin{quote}
+\textbf{Example 2}
+It is worth discussing a second example from Mazi\`eres, as shown in Figure \ref{fig:example2}. The figure shows three new notational concepts:
+\vspace{.3cm}
+\begin{packed_item1}
+\item a reflexive dependence arrow can be drawn explicitly
+\item sets of nodes can be grouped explicitly into separate sets or tiers, and
+\item the dependence arrows can carry specific labels.
+\end{packed_item1}
+\end{quote}
+
+\begin{quote}
+For example, the label on the reflexive arrow on the top tier indicates that at least 3 nodes are needed for consensus. According to the definitions above for the arrow directions, the top tier does not depend on the tiers below, and it is precisely for this reason that it is the `top' tier. The label on the arrow between the middle and top tiers indicates that the slice of any one node from the middle tier is composed of itself plus any two of the tier above. The slice of either $v_9$ or $v_{10}$ is composed of itself plus any two nodes from the middle tier. Since each of these, in turn, depends on any two of the nodes of the top tier, neither such slice can be a quorum. A quorum involving either $v_9$ or $v_{10}$ will have at least 5 and at most 7 nodes. A quorum involving \emph{both} $v_9$ and $v_{10}$, on the other hand, will have at least 6 and at most all 10 nodes.
+\end{quote}
+\vspace{-.5cm}
+\begin{figure}[H]
+\centering
+\captionsetup{width=11cm}
+\frame{\includegraphics[width=11 cm]{Figures/example2}}
+\caption{\bf \small Three-tier network (After \cite{Mazieres2016})}
+\label{fig:example2}
+\end{figure}
+
+\begin{quote}
+In Figure \ref{fig:example2} the top tier according to Mazi\`eres could be composed by a number of global financial institutions. The middle tier could be sets of banks operating at national level, with a single such set corresponding to a single country shown here. The bottom tier would be a single branch office, with the nodes inside representing individual customer accounts.
+\end{quote}
+
+\vspace{-.5cm}
+\begin{figure}[H]
+\centering
+\captionsetup{width=15cm}
+\frame{\includegraphics[width=15 cm]{Figures/example2_Sardex}}
+\caption{\bf \small Possible mapping to INTERLACE circuit architecture. (After \cite{Mazieres2016})}
+\label{fig:example2_Sardex}
+\end{figure}
+}}}}
+\end{center}
+
+\begin{center}
+\small
+\frame{\colorbox{light-gray}{\makebox[16.5cm]{\parbox{16.5cm}{
+%\vspace{.2cm}
+
+\begin{quote}
+%\vspace{-.3cm}
+In Figure \ref{fig:example2_Sardex}, on the other hand, the top tier would be only the single Sardex S.p.A.\ company. The middle tier could be composed by different national jurisdictions, each of which containing a set of circuits; the figure shows two such jurisdictions corresponding to two different countries. The bottom tier would then correspond to separate individual circuits, with the nodes corresponding to individual company accounts. There are no labels on the arrows because the dependence is to a specific node in every case, generating a centralized hierarchical network.
+\end{quote}
+\vspace{.2cm}
+}}}}
+\end{center}
+
+Although the architecture of Figure \ref{fig:example2_Sardex} may correspond to an initial implementation of the INTERLACE platform, it does not make use of the distribution capability of the Stellar consensus protocol, so let's proceed with the development of the protocol to see what will become possible.
+
+\subsection{Safety and Liveness}
+Nodes can be either well-behaved or ill-behaved. A well-behaved node chooses sensible quorum slices and obeys the protocol, including responding (eventually) to all requests. Ill-behaved nodes suffer Byzantine failure, meaning that they behave arbitrarily due for example to a malicious modification of the software, or may have crashed. The goal of FBAS is to ensure that all well-behaved nodes externalize the same values in spite of such ill-behaved nodes.
+\begin{quote}
+\vspace{-0.6cm}
+\small
+\begin{defin}
+Two nodes in a set $V$ are \emph{\textbf{divergent}} if they externalize different values to the same slot. A set $V$ of nodes in a FBAS is \emph{\textbf{safe}} if no two of its elements (nodes) externalize different values for the same slot.
+\end{defin}
+\begin{defin}
+A node $v \in V$ is \emph{\textbf{blocked}} if it is in some dead-end state from which consensus is no longer possible. A node $v \in FBAS$ has \emph{\textbf{liveness}} if it can externalize new values without the participation of any failed or ill-behaved nodes.
+\end{defin}
+\begin{defin}
+Nodes that enjoy both safety and liveness are called \emph{\textbf{correct}}. Nodes that are not correct have \emph{\textbf{failed}}.
+\end{defin}
+\end{quote}
+Thus, nodes without liveness are blocked, whereas nodes without safety are divergent. Figure \ref{fig:correct} shows the set inclusion relationships between these different kinds of nodes in a set $V$. The reason a divergent or blocked node is shown under the well-behaved category even though it has failed is that, unlike ill-behaved nodes, it may have started as a correct node but may fail if its choice of slice causes it to wait indefinitely for messages from an ill-behaved node (this makes it {\bf blocked}) or, worse, if its state is maliciously modified by messages from an ill-behaved node (this makes it {\bf divergent}). Thus, the reason divergent nodes are a subset of the blocked nodes is that an attack that violates safety is strictly more powerful that one that violates only liveness.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=14 cm]{Figures/correct}
+\caption{\bf \small Set inclusion relationships between node categories. (After \cite{Mazieres2016})}
+\label{fig:correct}
+\end{figure}
+
+Mazi\`eres explains that the above definition of liveness is weak because it only says that a node \emph{can} externalize, not that it \emph{will} or \emph{must}. As a consequence, there is a possibility for consensus to be forever delayed by, for example, preemptive reordering of the transactions. It is not clear whether this issue matters in the case of INTERLACE since we will not implement a completely decentralized system: some level of centralized control is likely to remain. Mazi\`eres in any case provides relevant references that can be consulted if this issue needs to be analysed in depth and resolved in some robust way.
+
+\subsubsection{Optimal Resilience: Quorum Intersection and Dispensable Sets}
+As is commonly assumed for asynchronous systems, messages between well-behaved nodes are eventually delivered, but can otherwise be delayed indefinitely or reordered arbitrarily. This section starts becoming more involved because it addresses the following non-trivial question: Given a specific $(V, Q)$ and a subset of $V$ that is ill-behaved, what are the best levels of safety and liveness that a FBAS can guarantee in an arbitrary network?
+\begin{quote}
+\vspace{-0.6cm}
+\small
+\begin{defin}
+\label{QI}
+A FBAS has \emph{\textbf{quorum intersection}} iff any two of its quorums share at least one node.\footnote{The term `iff' means `if and only if'. It implies that the causal dependence works in both directions, in contrast to merely `if' which works only in the reverse direction. In symbols, `A iff B' is written $A \Leftrightarrow B$, whereas `A if B' is written $B \Rightarrow A$ and is also read as `B implies A'.} In other words, $\forall U_i, U_j \in FBAS, U_i \cap U_j \ne 0$, where $i$ and $j$ range over the number of quorums for a given FBAS.
+\end{defin}
+\end{quote}
+
+Therefore, when a FBAS has many quorums, quorum intersection (QI) fails when \textbf{\textit{any two}} do not intersect. We remind the reader that $Q(v_i)$ is just the set of slices of a given node $v_i$ and, depending on the slices of all the other nodes $v_j \in Q(v_i)$, may or may not be a quorum $U \subseteq V$. Thus, although in the simple examples that follow each $Q(v)$ is a quorum, this is by no means the case in general.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=15 cm]{Figures/QI1}
+\caption{\bf \small A set of nodes without QI. (After \cite{Mazieres2016})}
+\label{fig:QI1}
+\end{figure}
+
+Figure \ref{fig:QI1} shows a system of 6 nodes that lacks QI, since the function $Q$ allows two quorums on the set of 6 nodes that do not intersect. Mazi\`eres says that the two quorums can separately agree on contradictory statements. In other words, since $v_5$ cannot communicate with $v_1$, it could say something different from what $v_1$ is saying for a given slot. Mazi\`eres says that the whole set of all nodes $\{ v_1, \cdots, v_6 \}$ is \emph{also} a quorum, which in this case we can call $U$, and it intersects the other two. Is this true? If we look back at the definition of a quorum (Definition \ref{quorum}), we can verify that yes, it is correct because each node has a slice that is part of $U$. So this is an example of a system that has multiple quorums but two of them do not intersect and, therefore, the system does not have QI. We can believe that there is no certainty that $v_1$ can contradict or agree with $v_5$ even though they both belong to $U$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=15 cm]{Figures/QI2}
+\caption{\bf \small A set of nodes with QI. (After \cite{Mazieres2016})}
+\label{fig:QI2}
+\end{figure}
+
+Safety cannot be guaranteed because such a system can operate like two separate FBAS systems that do not communicate. However, safety may not be possible even in a system with QI, like the one shown in Figure \ref{fig:QI2}, if the intersecting node is ill-behaved. If $v_7$ makes inconsistent statements to the left and right quorums they are as good as disconnected. Therefore, safety can be guaranteed only if the well-behaved nodes have QI; or, put otherwise, a FBAS $(V, Q)$ can survive Byzantine failure by a set $B \subseteq V$ iff $(V, Q)$ has QI after deleting the nodes in $B$ from $V$ and from all slices in $Q$. 
+
+More formally,
+\begin{quote}
+\vspace{-0.6cm}
+\small
+\begin{defin}
+\label{delete}
+If $(V, Q)$ is a FBAS and $B \subseteq V$ is a set of nodes, then to \emph{\textbf{delete}} $B$ from $(V, Q)$, written $(V, Q)^B$, means to compute the modified $(V \setminus B, Q^B)$, where
+\begin{align}
+Q^B(v) = \{ q \setminus B\ |\ q \in Q(v) \},		\qquad \forall v \in V \setminus B.
+\end{align}
+\end{defin}
+\end{quote}
+It is the responsibility of each node $v$ to ensure that $Q(v)$ does not violate QI. From Mazi\`eress paper it is not clear {\bf how}, however. Be that as it may, assume that Figure \ref{fig:QI2} evolved from the 3-node FBAS $\{ v_1, v_2, v_3 \}$ to a system that includes also $\{ v_4, v_5, v_6 \}$. Assume now that $\{ v_4, v_5, v_6 \}$ are malicious such that they choose slices that do not satisfy QI. But $Q(v)$ is meaningless for a malicious node. That's why the necessary condition for safety, QI after deleting ill-behaved nodes, is unaffected by the slices of ill-behaved nodes. The system $(V, Q)^{ \{ v_4, v_5, v_6 \} }$ restores QI for $\{ v_1, v_2, v_3 \}$. Note that we have not yet said how such deletion takes place. For now we just say that the protocol must guarantee safety for $\{ v_1, v_2, v_3 \}$ without these nodes having to know that $\{ v_4, v_5, v_6 \}$ are malicious.
+
+Turning now to dispensable sets or DSets, the safety and liveness of the nodes outside a DSet can  be guaranteed regardless of the behaviour of the nodes inside the DSet.
+\begin{quote}
+\vspace{-0.6cm}
+\small
+\begin{defin}
+\label{dset}
+Let $(V, Q)$ be a FBAS and $B \subseteq V$ be a set of nodes. We say that $B$ is a dispensable set or a \emph{\textbf{DSet}} iff:
+\begin{packed_item1}
+\item $(V, Q)^B$ has QI \qquad\qquad\qquad\qquad\ (Intersection)
+\item $V \setminus B$ is a quorum OR $B = V$ \qquad (Availability)
+\end{packed_item1}
+\end{defin}
+\end{quote}
+As explained by Mazi\`eres, availability protects against nodes in $B$ not replying to requests or impeding other nodes' progress. QI protects against nodes in $B$ making contradictory assertions that enable other nodes to externalize inconsistent values for the same slot. These two threats depend on slice size in opposite ways: greater slices increase the chance for QI, but also the chance that they will contain failed nodes, impacting availability. Smaller slices decrease the chance of failed nodes, but also the likelihood of having QI.
+
+The smallest DSet containing all ill-behaved nodes may contain also well-behaved nodes, if they depend on the ill-behaved ones. For example, in Figure \ref{fig:example2} if $v_5$ and $v_6$ are ill-behaved the smallest DSet would need to include also $v_9$ and $v_{10}$ since the lowest tier depends on any 2 of the nodes in the middle tier, and so it may depend on the two that are ill-behaved.
+\begin{quote}
+\vspace{-0.6cm}
+\small
+\begin{defin}
+\label{intact}
+A node $v \in FBAS$ is \emph{\textbf{intact}} iff $\exists\  DSet\  B$ containing all ill-behaved nodes and such that $v \notin B$.
+\end{defin}
+\begin{defin}
+\label{befouled}
+A node $v \in FBAS$ is \emph{\textbf{befouled}} iff it is not intact.
+\end{defin}
+\begin{theorem}
+\label{theorem1}
+Let $U$ be a quorum in FBAS $(V, Q)$. Let $B \subseteq V$, so that $B$ is not necessarily a slice of $U$. And let $U' = U \setminus B$. If $U' \neq \emptyset$, then $U'$ is a quorum in $(V, Q)^B$.
+\end{theorem}
+\begin{proof}
+First, as shown in Figure \ref{fig:theorem1}A, since $U$ is a quorum, every $v \in U$ has a slice $q \in Q(v)$ such that $q \in U$:
+\begin{align}
+\exists q \in Q(v) | q\in U, \qquad \forall v \in U.
+\end{align}
+Second, as shown in Figure \ref{fig:theorem1}B, since $U' \subseteq U$, every $v \in U'$ has $q \in Q(v)$ such that $q \setminus B \subseteq U'$:
+\begin{align}
+\exists q \in Q^B(v) | q \in U', \qquad \forall v \in U'.
+\end{align}
+Therefore, $U'$ is a quorum in $(V, Q)^B$.
+\end{proof}
+\end{quote}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=15 cm]{Figures/theorem1}
+\caption{\bf \small A) Quorum $U \subseteq V$ with set $B \subseteq V$. B) $U' = U \setminus B$ and $q^B(v) = q(v) \setminus B$.}
+\label{fig:theorem1}
+\end{figure}
+
+The next theorem is far from obvious.
+\begin{quote}
+%\vspace{-0.6cm}
+\small
+\begin{theorem}
+%\vspace{-0.4cm}
+\label{theorem2}
+If $B_1$ and $B_2$ are DSets in a PBAS $(V, Q)$ that has QI, then $B = B_1 \cap B_2$ is a DSet too.
+\end{theorem}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=5 cm]{Figures/Thm2_V}
+\caption{\bf \small Visualization of a set of nodes $V$ with two\\ DSets $B_1$ and $B_2$ and their intersection in red}
+\label{fig:Thm2_V}
+\vspace{-0.5cm}
+\end{figure}
+
+\begin{proof}
+Let $U_1 = V \setminus B_1$ and $U_2 = V \setminus B_2$ be two subsets of $V$ defined by taking away the two DSets in turn, as shown in Figure \ref{fig:Thm2_U1_U2}. Note that by Definition \ref{dset} both subsets have QI. By the same definition, both subsets are also quorums.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16 cm]{Figures/Thm2_U1_U2}
+\caption{\bf \small The two subsets $U_1$ and $U_2$}
+\label{fig:Thm2_U1_U2}
+\vspace{-0.4cm}
+\end{figure}
+
+\begin{case}
+If $U_1 = \emptyset$, then $B_1 = V$ and $B = V \cap B_2 = B_2$, which is a DSet.
+%\vspace{-0.4cm}
+\end{case}
+\begin{case}
+Similarly, if $U_2 = \emptyset$, then $B_2 = V$ and $B = B_1 \cap V = B_1$, which is a DSet.
+%\vspace{-0.4cm}
+\end{case}
+\begin{case}
+If we are not at these two extremes, as just stated above by quorum availability $U_1$ and $U_2$ are both quorums in $(V, Q)$. Also, the quorum definition \ref{quorum} implies that $U_1 \cup U_2$ (which also equals $V \setminus B$) is also a quorum (see Figure \ref{fig:Thm2_U1_U_U2}A). Therefore, $V \setminus B$ is a quorum. Therefore, $B_1 \cap B_2$ satisfies availability in $V$ despite $B$. This proves the {\bf availability} condition of a DSet, i.e.\ availability despite $B$. Proving {\bf QI} despite $B$ requires quite a bit more work.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=16 cm]{Figures/Thm2_U1_U_U2}
+\caption{\bf \small Union and intersection of the two subsets $U_1$ and $U_2$}
+\label{fig:Thm2_U1_U_U2}
+\end{figure}
+
+Let $U = U_1 \cap U_2$ (see Figure \ref{fig:Thm2_U1_U_U2}B). Note that $U$ also equals $U_2 \setminus B_1$  and $U_1 \setminus B_2$. By the definition of QI (Definition \ref{QI}), $U_1 \cap U_2 \ne \emptyset$. Then by Theorem \ref{theorem1} $U_1 \cap U_2 = U_2 \setminus B_1$ is a quorum in $(V, Q)^{B_1}$. In other words, Figure \ref{fig:Thm2_U1_U_U2}B is a quorum in Figure \ref{fig:Thm2_U1_U2}A.
+
+\vspace{0.3cm}
+$*$Let $U_a$ and $U_b$ be two quorums in $(V, Q)^B = U_1 \cup U_2$. We begin the analysis by working with $U_a$, and repeat the argument later for $U_b$.
+\vspace{0.3cm}
+\begin{packed_item1}
+\item If $U_a \setminus B_1 = \emptyset$, $U_a$ must be at most $\subseteq B_1$ (but not include $B$, by construction)
+\item Similarly, If $U_a \setminus B_2 = \emptyset$, $U_a$ must be at most $\subseteq B_2$ (but not include $B$, by construction)
+\item If $U_a \setminus B_1 = \emptyset$ {\bf AND} $U_a \setminus B_2 = \emptyset$, then $U_a = \emptyset$.
+\end{packed_item1}
+\vspace{0.3cm}
+
+Now whether or not $B_1$ and $B_2$ are quorums is not relevant to the argument since they are DSets by assumption. They are sets we wish to ignore. Therefore, the cases above are not of interest and are irrelevant. Therefore, we are only interested in the two cases
+\begin{align}
+U_a \setminus B_1 \ne \emptyset \qquad \text{\bf OR} \qquad U_a \setminus B_2 \ne \emptyset.
+\end{align}
+
+This implies that there are now three possibilities for $U_a$:
+\vspace{0.3cm}
+\begin{packed_enumerate}
+\item $U_a \setminus B_1$ is a quorum in $\big( (V, Q)^B \big)^{B_1} = (V, Q)^{B_1}$
+\item $U_a \setminus B_2$ is a quorum in $\big( (V, Q)^B \big)^{B_2} = (V, Q)^{B_2}$
+\item Both, i.e.\ the quorum is outside of both $B_1$ and $B_2$.
+\end{packed_enumerate}
+\vspace{0.3cm}
+What we show next is that if 1) is true, then 2) is true too, and vice versa. Therefore, since we have ruled out all other possibilities, the next few lines will show that the \emph{only} possibility left is 3).
+
+\vspace{0.3cm}
+If 1) is true, then $(U_a \setminus B_1) \cap U \ne \emptyset$, by QI of $(V, Q)^{B_1}$.
+In fact, since $B_1$ is a DSet by construction, $(V, Q)^{B_1}$ has QI. And since $(U_a \setminus B_1)$ and $U$ are both quorums, by definition of QI their intersection is not empty.
+%%% The following is NOT the reason why $(V, Q)^{B_1}$ has QI. It is merely consistent with the fact that it does. In other words, it is necessary but not sufficient. Therefore, I am commenting this out:
+%\vspace{0.3cm}
+%\makebox[\textwidth][c]{
+%\begin{minipage}{.5\textwidth}
+%Let us revisit why:\\
+%-- $U = U_1 \cap U_2 = (V \setminus B_1) \cap (V \setminus B_2) = V \setminus (B_1 \cup B_2)$.\\
+%-- Therefore, $U \subseteq V \setminus B_1$\\
+%-- We have already seen that $U$ is a quorum in $(V, Q)^{B_1}$\\
+%-- $U_a \setminus B_1$ is a quorum by Theorem \ref{theorem1}\\
+%-- Therefore, $(V, Q)^{B_1}$ has QI.
+%\end{minipage}
+%}
+Now, $(U_a \setminus B_1) \cap U$ happens to equal $(U_a \setminus B_1) \setminus B_2$. Therefore, $(U_a \setminus B_1) \setminus B_2 \ne \emptyset$. If that is the case, then even more
+$U_a \setminus B_2 \ne \emptyset$. Therefore, by Theorem \ref{theorem1} $U_a \setminus B_2$ is a quorum in $(V, Q)^{B_2}$.
+
+\vspace{0.3cm}
+Similarly, if 2) is true, then $(U_a \setminus B_2) \cap U \ne \emptyset$, by QI of $(V, Q)^{B_2}$, since $B_2$ is also a DSet. Since $(U_a \setminus B_2) \cap U = (U_a \setminus B_2) \setminus B_1$, $(U_a \setminus B_2) \setminus B_1 \ne \emptyset$, and $U_a \setminus B_1 \ne \emptyset$ either. Therefore, by Theorem \ref{theorem1} $U_a \setminus B_1$ is a quorum in $(V, Q)^{B_1}$.
+
+\vspace{0.3cm}
+Therefore, 3) is the only possibility left. Knowing this helps a global understanding of all the possibilities, but we have actually done more work than was strictly necessary to prove the theorem. All we need to focus on is 1): $U_a \setminus B_2$ is a quorum in $(V, Q)^{B_2}$.
+
+\vspace{0.3cm}
+Now go back to $*$ and follow the same argument for $U_b$. Look at the possibility 1) that
+$U_b \setminus B_1$ is a quorum. Following the same argument we can show that this implies that $U_b \setminus B_2$ is a quorum in $(V, Q)^{B_2}$. But then, by QI despite $B_2$, we necessarily have that
+\begin{align}
+(U_a \setminus B_2) \cap (U_b \setminus B_2) \ne \emptyset.
+\end{align}
+If that's true, $U_a \cap U_b \ne \emptyset$ is even more so. Since $U_a$ and $U_b$ are any two quorums in $(V, Q)^B$, we have proven QI despite $B$. Hence $B$ is a DSET.
+\end{case}
+\vspace{-0.5cm}
+\end{proof}
+\end{quote}
+
+The above theorem may seem ``much ado about nothing'', but in fact it has shown a rather important general fact, namely that DSets are closed under intersection. We use this fact immediately, in the next theorem.
+
+
+
+\begin{quote}
+\small
+\begin{theorem}
+\label{theorem3}
+In a FBAS with QI, the set of befouled nodes is a DSet.
+\end{theorem}
+\begin{proof}
+In the definition of DSet we did not specify whether the nodes contained in a DSet were ill-behaved, blocked, divergent, or correct. We only said that what's left after we take a DSet is a quorum and, in addition, it has QI (if it happens to contain other quorums).
+
+\vspace{0.3cm}
+Now let a FBAS contain an arbitrary number of DSets, such that each DSet may contain a number of ill-behaved nodes. Let $B_{min}$ be the specific intersection of these DSets that contains all the ill-behaved nodes. According to Definition \ref{intact}, a node $v$ is intact iff $v \notin B_{min}$. Therefore, $B_{min}$ is the set of befouled nodes. By Theorem \ref{theorem2}, $B_{min}$ is a DSet.
+\end{proof}
+\end{quote}
+
+
+
+
+
+
+
+

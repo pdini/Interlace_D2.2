@@ -270,8 +270,8 @@
 %===================================================
 \input{1-Introduction/introduction}
 \input{2-DLTs/dlt}
+\input{3-HL_Architecture/hl_arch}
 \chapter*{References}
-\renewcommand{\section}[2]{}
 
 \setlength{\parskip}{0.8\baselineskip}
 \bibliographystyle{plainurl}
@@ -282,9 +282,14 @@
 %===================================================
 %================== APPENDIX
 %===================================================
-%\begin{appendix}
-%\section*{Appendix}
-%\includepdf[pages={-}]{sections/4-CaSM/CaCycleAsm.pdf}
-%\end{appendix}
+\appendix
+\addcontentsline{toc}{chapter}{Appendix: Basic Mathematical Framework for Stellar}
+\setcounter{chapter}{1}
+\renewcommand\thechapter{}
+\makeatletter
+\renewcommand\thesection{\@Alph\c@chapter.\@arabic\c@section}
+\makeatother
+\input{4-Appendix/stellar}
+
 
 \end{document}
