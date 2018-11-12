@@ -44,8 +44,16 @@ Agent-centric
 
 
 \section{Hyperledger}
+The main points of interest of Hyperledger Fabric are \cite{AndroulakiEtAl2018}:
 
-\cite{AndroulakiEtAl2018}
+\begin{quote}
+\begin{packed_item1}
+\item It supports modular consensus protocols, which allows the system to be tailored to particular use cases and trust models.
+\item Fabric is the first blockchain system that runs distributed applications written in standard, general-purpose programming languages, without systemic dependency on a native cryptocurrency. This stands in sharp contrast to existing blockchain platforms that require “smart-contracts” to be written in domain-specific languages or rely on a cryptocurrency.
+\item Fabric realizes the permissioned model using a portable notion of membership, which may be integrated with industry-standard identity management.
+\item Fabric achieves end-to-end throughput of more than 3500 transactions per second in certain popular deployment configurations, with sub-second latency, scaling well to over 100 peers.
+\end{packed_item1}
+\end{quote}
 
 
 
@@ -56,6 +64,99 @@ Hyperledger Indy-Plenum Byzantine Fault Tolerance (PBFT).\footnote{\url{https://
 
 
 
+
+%&\hspace{0.5cm}ASM/ASIM framework \\
+
+
+
+
+
+\begin{sidewaystable}
+\small
+\begin{centering}
+{\begin{tabular}{| l | c | c | c | c | c | c | c | c | c | c |}
+\hline
+				& & \textbf{Read}  & \textbf{Write}  & \textbf{} 
+				& \textbf{Smart} & \textbf{Smart}	&\textbf{Consensus}
+				& \textbf{Backup} & \textbf{}	&\textbf{Monetary} \\
+\textbf{DLT}		&\textbf{Focus}  & \textbf{Access} & \textbf{Access} & \textbf{Data/Agent} 
+				& \textbf{Contracts} & \textbf{Contract}	&\textbf{Model} 
+				& \textbf{System} & \textbf{Interfaces}	&\textbf{Model} \\
+				& & \textbf{} & \textbf{} & \textbf{} 
+				& \textbf{} & \textbf{Language(s)}	&\textbf{} 
+				& \textbf{} & \textbf{}	&\textbf{} \\
+\hline
+\hline
+\textbf{Ethereum}	&General- &Public		&Permissionless	&Data-centric	&Yes		&Solidity	
+				&Global, PoS 		&?			&?		&Assets \\
+				&purpose &				&			&		&			&on EVM	
+				& 		&			&		& \\
+\hline
+\textbf{Holochain}	&Fog &Public		&Permissionless	&Agent-centric	&?		&?
+				&Local 		&?				&?			&Mutual Credit\\
+\hline
+\textbf{Stellar}		& &Public		&Permissionless	&Data-centric	&?		&
+				&FBAS 			&?				&?			&Assets\\
+\hline
+\textbf{Corda} 		&Business agreements&Private		&Permissioned		&Data-centric	&?		&Bytecode
+				&Local state	&Relational DB		&SQL		&Assets\\
+		 		&between financial inst.&			&				&			&		&subset on JVM
+				&(Notaries)	&				&FPML			&\\
+\hline
+\textbf{Quorum} 	&Public and  &Private		&Permissioned		&Data-centric	&?		&
+				&Centralised 	&?				&?			&Assets\\
+			 	&banking sectors&		&		&	&		&
+				& 	&				&			&\\
+\hline
+\textbf{Hyperledger}	&Enterprise, B2B	&Private		&Permissioned		&Data-centric	&Yes		&JS, Go
+				&Centralised 	&?				&?			&Adaptable to\\
+ 				& \& supply chain	&			&				&			&		&
+				& 			&				&			&Mutual Credit\\
+\hline
+\end{tabular}}
+
+\vspace{1cm}
+
+{\begin{tabular}{| l | c | c | c | c | c | c | c | c | c | c |}
+\hline
+				& \textbf{}  & \textbf{}  & \textbf{Transaction} &
+				& \textbf{Regulatory/} & \textbf{Explicit links}	&\textbf{Business}
+				& \textbf{Computational} & \textbf{Turing}	&\textbf{Contract} \\
+\textbf{DLT}		& \textbf{Blockchain} & \textbf{Immutable} & \textbf{Validation} & \textbf{Architecture} 
+				& \textbf{Supervisory} & \textbf{of SCs to}	&\textbf{Flow} 
+				& \textbf{Model} & \textbf{Completeness}	&\textbf{Object} \\
+				& \textbf{} & \textbf{} & \textbf{} &
+				& \textbf{nodes} & \textbf{legal prose}	&\textbf{} 
+				& \textbf{} & \textbf{}	&\textbf{} \\
+\hline
+\hline
+\textbf{Ethereum}	&Yes			&Yes		&				&Order-Execute	&
+				&			&		&Virtual Computer	&No				&Stateful \\
+\hline
+\textbf{Holochain}	&Individual	&?		&Local to the parties	&				&
+				&			& 		&				&				& \\
+				&chains		&		&				&				&
+				&			& 		&				&				& \\
+\hline
+\textbf{Stellar}		&			&?		&				&				&?
+				&			& 		&?				&?				&\\
+\hline
+\textbf{Corda} 		&No			&Yes		&Local to the parties	&				&Yes
+				&			&Yes		&UTXO			&Yes				&Stateless\\
+\hline
+\textbf{Quorum} 	&Yes			&?		&				&				&?
+				&			& 		&?				&?				&\\
+\hline
+\textbf{Hyperledger}	&Yes			&Yes		&				&Execute-Order	&
+				&			& 		&?				&?				& \\
+ 				&			&		&				&Validate			&
+				&			& 		&				&				& \\
+\hline
+\end{tabular}}
+\caption{\bf \small Comparison of main properties of different types of blockchain}
+\label{blockchain_type}
+\end{centering}
+\end{sidewaystable}
 
 
 
