@@ -6,13 +6,54 @@
 Paolo Dini and Giuseppe Littera
 \end{center}
 
-\section{Basic Concepts}
-\subsection{Deterministic Execution}
-As discussed in \cite{AndroulakiEtAl2018}, distributed systems have relied on the state machine replication (SMR) model \cite{Schneider1990} for a few decades. The SMR approach is motivated by the need for redundancy in the provision of services to a given client as a strategy to offset possible faults. Each service request from a client is executed in an identical and deterministic way by a set of servers, which means that the same operations are executed in the same order by each server. By definition, the correct response is whatever the majority of the servers calculates. Therefore, SMR is resistant also to Byzantine faults, which are malicious and not merely technical, as long as no more than $t$ servers are affected for a total set comprising $2t + 1$ servers. Most blockchains have taken SMR as a starting point, where the set of operations in this case is one block of transactions. All global consensus algorithms are centred around reaching agreement on the ordering of the transactions in a given block -- hence the name `order-execute' for this type of distributed architecture.
+\section{Introduction}
+As stated in the INTERLACE proposal, we are not interested in relying on Bitcoin, due its very low performance efficiency ($< 10$ transactions per second, or $[Tx/s]$) and the wastefully high energy requirements of the Proof of Work (PoW) consensus protocol. Bitcoin, however, remains a useful reference point for many blockchain properties and parameters. It is therefore assumed that the reader is already familiar with the basic concepts of the Bitcoin blockchain, which are extremely well-explained in the excellent book by Antonopoulos \cite{Antonopoulos2015}.
 
-For example, in Bitcoin order-execute involves deterministic sequential execution by each peer, after the first peer has ordered a block, solved the PoW puzzle, and broadcast the block by gossip. The validation of the new block is achieved once every peer has completed and validated the execution. In a public blockchain such as Ethereum a denial-of-service (DoS) attack could be mounted by embedding an infinite loop in the smart contract of one of the transactions. Since it is not possible to determine in general whether or not an algorithm completes (halting problem), such a loop could go undetected, leading to a block that cannot be validated and stopping the ability of the blockchain to support future transactions. Ethereum solves this problem by using ``gas'' which, once converted in the cryptocurrency of that blockchain (ether), results in a charge for the execution of transactions.
+In the next section we present a few important concepts around which design trade-offs, and in our case selection trade-offs, have been made to arrive at the architecture that we feel is most suitable for INTERLACE and for the Sardex circuit. A few more specific details are then presented that concern a small subset of possible Distributed Ledger Technologies (DLTs) in common use, which are summarised at the end of the chapter in a summary table. Thus, the analysis in this chapter forms the basis for the architectural design decisions described in Chapter \ref{ch:hl}.
+
+\section{Basic Concepts}
+\subsection{The Blockchain as a Distributed Applications Platform}
+The most important innovation implicit in the Bitcoin blockchain is not the creation ``out of thin air'' of a new currency, or the substitution of a central authority for validating a ledger of transactions in this new independent currency with a distributed architecture based on a consensus protocol. These two innovations were the main motivation for creating Bitcoin, but as has been noted countless times the potentially more impactful innovation is the blockchain itself. Figure \ref{fig:dapps} proposes a reason why by highlighting the role of the second-generation blockchains such as Ethereum as a distributed, permanent, and immutable memory in enabling a new type of distributed application. The fact that this memory substrate is shared among completely unrelated applications and user groups is interesting from the point of view of the sharing economy, which could be regarded as a third innovation, but the (fourth) innovation that opens up a new space for computer science and software engineering is the fact that the memory is \emph{distributed}, \emph{permanent}, and \emph{immutable}.
+
+As shown in Figure \ref{fig:dapps}, whereas Bitcoin allows only for the simplest kinds of interactions between users and the permanent, distributed, and immutable memory, second-generation blockchains have introduced what looks like a familiar stack: user interface, code, persistence layer. However, the persistence layer is writable only once. A permanent and immutable \emph{shared} history will remain ``on the \emph{shared} record'' forever -- or at least as long as the human species lasts. Clearly, this is a very special type of application that has never been possible before. If, as Edward De Bono said long ago, memory is the basic mechanism of intelligence \cite{DeBono1969}, this kind of persistence layer could be the start of a collective intelligence with properties and capabilities that are impossible to predict today. For the moment, therefore, we focus on the most obvious use case, a financial information system -- i.e.\ as the blockchain as the ``mind'' of the real economy. In particular, we wish to define the most appropriate properties of the financial information system and transaction engine for the Sardex circuit.
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=17 cm]{Figures/dapps}
+\caption{\bf \small Second-generation blockchains enable a peculiar type of distributed application}
+\label{fig:dapps}
+\end{figure}
+
+
+\subsection{Deterministic Execution}
+As discussed in the Hyperledger technical white paper \cite{AndroulakiEtAl2018}, distributed systems have relied on the state machine replication (SMR) paradigm \cite{Schneider1990} for a few decades. The SMR approach is motivated by the need for redundancy in the provision of services to a given client as a strategy to offset possible faults. Each service request from a client is executed in an identical and deterministic way by a set of servers, which means that the same operations are executed in the same order by each server. By definition, the correct response is whatever the majority of the servers calculates. Therefore, SMR is resistant also to Byzantine faults, which are malicious and not merely technical. More precisely, an SMR system is $t$-resistant as long as no more than $t$ servers are affected by faults (Byzantine or otherwise) for a total set comprising $2t + 1$ servers. Most blockchains have taken SMR as a starting point, where the set of operations in this case is one block of transactions. In particular, most global consensus algorithms are centred around reaching agreement on the ordering of the transactions in a given block -- hence the name `order-execute' for this type of distributed architecture.
+
+For example, in Bitcoin order-execute involves deterministic sequential execution by each peer, after the first peer has ordered a block, solved the PoW puzzle, and broadcast the block by gossip. The validation of the new block is achieved once every peer has completed and validated the execution. In a public blockchain such as Ethereum a denial-of-service (DoS) attack could be mounted by embedding an infinite loop in the smart contract of one of the transactions. Since it is not possible to determine in general whether or not an algorithm completes (`halting problem'), such a loop could go undetected, leading to a block that cannot be validated and stopping the ability of the blockchain to support future transactions. Ethereum solves this problem by using ``gas'' which, once converted in the cryptocurrency of that blockchain (ether), results in a charge for the execution of transactions.
 
 The low efficiency of sequential execution can be improved upon with parallel execution of unrelated transactions. However, detecting the possible interdependencies is not trivial. Stellar and Holochain seem to have been able to do that.
+
+\subsection{Non-Deterministic Execution}
+Non-deterministic execution of smart contracts can lead to forks in the blockchain and is therefore avoided when possible. This can be achieved by means of smart contract languages that are not Turing-complete: they should be expressive enough for the purposes of the blockchain they serve (like Solidity for Ethereum) but not so general as to render complete avoidance of non-determinism impossible. For example, Androulaki et al.\ \cite{AndroulakiEtAl2018} mention a map iterator in Go that is a deterministic operation at the level of the command but hides a non-deterministic implementation in the Go language itself.
+
+\subsection{Confidentiality}
+Performing chaincode on all peers may expose details that some peer would rather be kept private. This issue is particularly important in B2B contexts. One possible solution is to replicate the end-state of the calculation (passive replication) rather than the whole calculation (active replication) \cite{AndroulakiEtAl2018}.
+
+\subsection{Latency vs.\ Performance in Consensus}
+As shown in Figure \ref{fig:consensus_tradeoffs}, the consensus objective can be cast as a trade-off between network latency vs.\ blockchain performance expressed in transactions per second [$Tx/s$] (\cite{vukolic2015}, cited in \cite{AndroulakiEtAl2018})
+
+
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=14 cm]{Figures/consensus_tradeoffs}
+\caption{\bf \small Network latency-node scalability trade-offs, after \cite{vukolic2015}}
+\label{fig:consensus_tradeoffs}
+\end{figure}
+
+
+
 
 
 
