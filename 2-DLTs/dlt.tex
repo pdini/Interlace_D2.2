@@ -17,7 +17,6 @@ The most important innovation implicit in the Bitcoin blockchain is not the crea
 
 As shown in Figure \ref{fig:dapps}, whereas Bitcoin allows only for the simplest kinds of interactions between users and the permanent, distributed, and immutable memory, second-generation blockchains have introduced what looks like a familiar stack: user interface, code, persistence layer. However, the persistence layer is writable only once. A permanent and immutable \emph{shared} history will remain ``on the \emph{shared} record'' forever -- or at least as long as the human species lasts. Clearly, this is a very special type of application that has never been possible before. If, as Edward De Bono said long ago, memory is the basic mechanism of intelligence \cite{DeBono1969}, this kind of persistence layer could be the start of a collective intelligence with properties and capabilities that are impossible to predict today. For the moment, therefore, we focus on the most obvious use case, a financial information system -- i.e.\ as the blockchain as the ``mind'' of the real economy. In particular, we wish to define the most appropriate properties of the financial information system and transaction engine for the Sardex circuit.
 
-
 \begin{figure}[h]
 \centering
 \includegraphics[width=17 cm]{Figures/dapps}
@@ -25,9 +24,10 @@ As shown in Figure \ref{fig:dapps}, whereas Bitcoin allows only for the simplest
 \label{fig:dapps}
 \end{figure}
 
+As explained in the Corda technical white paper (\cite{Hearn2016}: 30), the need for organising the transactions into blocks is a consequence of the fact that the rate at which transactions are performed is greater than the rate at which they can be validated by all the peers of a large distributed system with network latencies. The block structure permits the validation of a set of transactions at a time. Since Corda is a permissioned distributed database, it does not need to achieve global consensus and therefore does not need to employ blocks.
 
 \subsection{Deterministic Execution}
-As discussed in the Hyperledger technical white paper \cite{AndroulakiEtAl2018}, distributed systems have relied on the state machine replication (SMR) paradigm \cite{Schneider1990} for a few decades. The SMR approach is motivated by the need for redundancy in the provision of services to a given client as a strategy to offset possible faults. Each service request from a client is executed in an identical and deterministic way by a set of servers, which means that the same operations are executed in the same order by each server. By definition, the correct response is whatever the majority of the servers calculates. Therefore, SMR is resistant also to Byzantine faults, which are malicious and not merely technical. More precisely, an SMR system is $t$-resistant as long as no more than $t$ servers are affected by faults (Byzantine or otherwise) for a total set comprising $2t + 1$ servers. Most blockchains have taken SMR as a starting point, where the set of operations in this case is one block of transactions. In particular, most global consensus algorithms are centred around reaching agreement on the ordering of the transactions in a given block -- hence the name `order-execute' for this type of distributed architecture.
+As discussed in the Hyperledger technical white paper \cite{AndroulakiEtAl2018}, distributed systems have relied on the state machine replication (SMR) paradigm \cite{Schneider1990} for a few decades. The SMR approach is motivated by the need for redundancy in the provision of services to a given client as a strategy to offset possible faults. Each service request from a client is executed in an identical, deterministic, and asynchronous way by a set of servers, which means that the same operations are executed in the same order by each server, even though not necessarily at the same time. By definition, the correct response is whatever the majority of the servers calculates. Therefore, SMR is resistant also to Byzantine faults, which are malicious and not merely technical. More precisely, an SMR system is $t$-resistant as long as no more than $t$ servers are affected by faults (Byzantine or otherwise) for a total set comprising $2t + 1$ servers. Most blockchains have taken SMR as a starting point, where the set of operations in this case is one block of transactions. In particular, most global consensus algorithms are centred around reaching agreement on the ordering of the transactions in a given block -- hence the name `order-execute' for this type of distributed architecture.
 
 For example, in Bitcoin order-execute involves deterministic sequential execution by each peer, after the first peer has ordered a block, solved the PoW puzzle, and broadcast the block by gossip. The validation of the new block is achieved once every peer has completed and validated the execution. In a public blockchain such as Ethereum a denial-of-service (DoS) attack could be mounted by embedding an infinite loop in the smart contract of one of the transactions. Since it is not possible to determine in general whether or not an algorithm completes (`halting problem'), such a loop could go undetected, leading to a block that cannot be validated and stopping the ability of the blockchain to support future transactions. Ethereum solves this problem by using ``gas'' which, once converted in the cryptocurrency of that blockchain (ether), results in a charge for the execution of transactions.
 
@@ -38,6 +38,10 @@ Non-deterministic execution of smart contracts can lead to forks in the blockcha
 
 \subsection{Confidentiality}
 Performing chaincode on all peers may expose details that some peer would rather be kept private. This issue is particularly important in B2B contexts. One possible solution is to replicate the end-state of the calculation (passive replication) rather than the whole calculation (active replication) \cite{AndroulakiEtAl2018}.
+
+\subsection{Native Currency}
+The Bitcoin blockchain provides the simplest example of what a native currency is and how it is created. This is done by a miner by writing a transaction to self of (currently) 12.5 BTC at the beginning of the block he/she will then try to validate by finding the nonce that satisfies the puzzle requirement (i.e.\ the hash of the miner's current block with the winning nonce) for the current block. If the miner wins the current PoW puzzle the 12.5 BTC to self will become ``real'' and will be credited to her private key. Many blockchains, like Hyperledger, do not have a native currency. This is what INTERLACE needs because in mutual credit the important concept is not whether or not an \emph{asset} is present but what value someone's credit \emph{balance} has -- a value that can be negative as well as positive.
+
 
 \subsection{Latency vs.\ Performance in Consensus}
 As shown in Figure \ref{fig:consensus_tradeoffs}, the consensus objective can be cast as a trade-off between network latency vs.\ blockchain performance expressed in transactions per second [$Tx/s$] (\cite{vukolic2015}, cited in \cite{AndroulakiEtAl2018})
@@ -208,7 +212,49 @@ Hyperledger Indy-Plenum Byzantine Fault Tolerance (PBFT).\footnote{\url{https://
 				&			& 		&				&				& \\
 \hline
 \end{tabular}}
-\caption{\bf \small Comparison of main properties of different types of blockchain}
+
+
+\vspace{1cm}
+
+{\begin{tabular}{| l | c | c | c | c | c | c | c | c | c | c |}
+\hline
+				& \textbf{Inter-Node}		& \textbf{}  			& \textbf{} 	&
+				& \textbf{} 				& \textbf{}				&\textbf{}
+				& \textbf{} 				& \textbf{}				&\textbf{} \\
+\textbf{DLT}		& \textbf{Communication} 	& \textbf{} 				& \textbf{} 		& \textbf{} 
+				& \textbf{} 				& \textbf{}				&\textbf{} 
+				& \textbf{} 				& \textbf{}				&\textbf{} \\
+				& \textbf{} 				& \textbf{} 				& \textbf{} 				&
+				& \textbf{} 				& \textbf{ }				&\textbf{} 
+				& \textbf{} 				& \textbf{}				&\textbf{} \\
+\hline
+\hline
+\textbf{Ethereum}	&Global			&		&				&	&
+				&			&		&	&				& \\
+\hline
+\textbf{Holochain}	&Local		&?		&	&				&
+				&			& 		&				&				& \\
+				&			&		&				&				&
+				&			& 		&				&				& \\
+\hline
+\textbf{Stellar}		&			&?		&				&				&?
+				&			& 		&?				&?				&\\
+\hline
+\textbf{Corda} 		&Flows			&		&&				&
+				&			&		&			&				&\\
+\hline
+\textbf{Quorum} 	&			&?		&				&	&?
+				&			& 		&?				&?				&\\
+\hline
+\textbf{Hyperledger}	&			&		&				&	&
+				&			& 		&?				&?				& \\
+ 				&			&		&				&			&
+				&			& 		&				&				& \\
+\hline
+\end{tabular}}
+
+
+\caption{\bf \small Summary table comparing the main properties of different types of blockchain}
 \label{blockchain_type}
 \end{centering}
 \end{sidewaystable}
