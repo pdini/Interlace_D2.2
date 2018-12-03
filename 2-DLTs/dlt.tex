@@ -84,8 +84,11 @@ Corda \cite{Hearn2016} is a permissioned distributed database for banking networ
 
 \subsection{Holochain}
 Agent-centric
-\cite{HarrisBrownEtAl2018}
 
+
+Holochain is a bit confusing because it is composed of two parts: Holochain proper is the underlying technology -- not a global blockchain but in any case a persistence layer composed of many individual chains \cite{HarrisBrownEtAl2018}.
+
+; and Holo, the interaction, governance, and financial framework that runs on Holochain.
 
 
 
@@ -120,144 +123,187 @@ Hyperledger Indy-Plenum Byzantine Fault Tolerance (PBFT).\footnote{\url{https://
 \cite{Aublinetal2013}.
 
 
-
-
-
-
 %&\hspace{0.5cm}ASM/ASIM framework \\
 
-
-
-
-
-\begin{sidewaystable}
+\begin{table}
 \small
 \begin{centering}
-{\begin{tabular}{| l | c | c | c | c | c | c | c | c | c | c |}
+{\begin{tabular}{| l | c | c | c | c | c | c | c |}
 \hline
-				& 				& \textbf{Read}			& \textbf{Write}		& \textbf{} 
-				& \textbf{Smart}		& \textbf{Smart}			&\textbf{Consensus}
-				& \textbf{Backup} 	& \textbf{}				&\textbf{Monetary} \\
-\textbf{DLT}		&\textbf{Focus}  	& \textbf{Access} 		& \textbf{Access}	& \textbf{Data/Agent} 
-				& \textbf{Contracts} 	& \textbf{Contract}		&\textbf{Model} 
-				& \textbf{System} 	& \textbf{Interfaces}		&\textbf{Model} \\
+				& 				& \textbf{Read}			& \textbf{Write}		& \textbf{Data/} 
+				& \textbf{Smart}		& \textbf{Smart}			&\textbf{Consensus}\\
+\textbf{DLT}		&\textbf{Focus}  	& \textbf{Access} 		& \textbf{Access}	& \textbf{Agent} 
+				& \textbf{Contracts} 	& \textbf{Contract}		&\textbf{Model} \\
 				& 				& \textbf{} 				& \textbf{} 			& \textbf{} 
-				& \textbf{} 			& \textbf{Language(s)}	&\textbf{} 
-				& \textbf{} 			& \textbf{}				&\textbf{} \\
+				& \textbf{} 			& \textbf{Language(s)}	&\textbf{}  \\
 \hline
+\hline
+\textbf{Holochain}	&General-purpose 				&Public		&Permissionless	&Agent-	&Yes		&?
+				&Local 				\\
+				&platform 					&DHT		&DHT			&centric	&		&
+				& 					\\
 \hline
 \textbf{Ethereum}	&General-purpose		&Public		&Permissionless	&Data-centric	&Yes		&Solidity	
-				&Global, PoS 			&?			&?				&Assets \\
-				&platform 				&			&				&			&		&on EVM	
-				& 					&			&				& \\
+				&Global, PoS 			 \\
+				&platform 				&Chain		&Chain			&			&		&on EVM	
+				& 					 \\
 \hline
-\textbf{Holochain}	&Fog 				&Public		&Permissionless	&Agent-centric	&?		&?
-				&Local 				&?			&?				&Mutual Credit\\
+\textbf{Stellar}		&Cross-border 					&Public		&Permissionless	&Data-centric	&Limited	&Limited
+				&FBAS 				\\
+				&exchange 					&?			&				&			&		&
+				& 					\\
 \hline
-\textbf{Stellar}		& 					&Public		&Permissionless	&Data-centric	&?		&
-				&FBAS 				&?			&?				&Assets\\
-\hline
-\textbf{Corda} 		&Business agreements	&Private		&Permissioned		&Data-centric	&?		&Bytecode
-				&Local state			&Relational DB	&SQL			&Assets\\
-		 		&between financial inst.	&			&				&			&		&subset on JVM
-				&(Notaries)			&			&FPML			&\\
-\hline
-\textbf{Quorum} 	&Public and  			&Private		&Permissioned		&Data-centric	&?		&
-				&BFT 				&?			&?				&Assets\\
-			 	&banking sectors		&			&				&			&		&
-				& 					&			&				&\\
+
+\textbf{Quorum} 	&Public and  			&Private		&Permissioned		&Data-centric	&Yes		&Solidity
+				&BFT 				\\
+			 	&banking sectors		&			&				&			&		&on EVM
+				& 					\\
 \hline
 \textbf{Hyperledger}	&Enterprise, B2B		&Private		&Permissioned		&Data-centric	&Yes		&JS, Go
-				&Centralised 			&Key-value	&?				&Adaptable to\\
+				&Centralised 			\\
  				& \& supply chain		&			&				&			&		&
-				& 					&store DB		&				&Mutual Credit\\
+				& 					\\
 \hline
-\end{tabular}}
-
-\vspace{1cm}
-
-{\begin{tabular}{| l | c | c | c | c | c | c | c | c | c | c |}
-\hline
-				& \textbf{}  			& \textbf{}  			& \textbf{Transaction} 	&
-				& \textbf{Regulatory/} 	& \textbf{Explicit links}	&\textbf{Business}
-				& \textbf{Computational} 	& \textbf{Turing}		&\textbf{Contract} \\
-\textbf{DLT}		& \textbf{Blockchain} 	& \textbf{Immutable} 		& \textbf{Validation} 		& \textbf{Architecture} 
-				& \textbf{Supervisory} 	& \textbf{of SCs to}		&\textbf{Flow} 
-				& \textbf{Model} 		& \textbf{Completeness}	&\textbf{Object} \\
-				& \textbf{} 				& \textbf{} 				& \textbf{} 				&
-				& \textbf{nodes} 		& \textbf{legal prose}		&\textbf{} 
-				& \textbf{} 				& \textbf{}				&\textbf{} \\
+				&Business	 		&			&				&			&		&Bytecode
+				&Local state			\\
+\textbf{Corda} 		&agrmts between			&Private		&Permissioned		&Data-centric	&?		&subset
+				&(Notaries)			\\
+		 		&fin. institutions			&			&				&			&		&on JVM
+				&					\\
 \hline
 \hline
-\textbf{Ethereum}	&Yes			&Yes		&				&Order-Execute	&
-				&			&		&Virtual Computer	&No				&Stateful \\
 \hline
-\textbf{Holochain}	&Individual	&?		&Local to the parties	&				&
-				&			& 		&				&				& \\
-				&chains		&		&				&				&
-				&			& 		&				&				& \\
 \hline
-\textbf{Stellar}		&			&?		&				&				&?
-				&			& 		&?				&?				&\\
-\hline
-\textbf{Corda} 		&No			&Yes		&Local to the parties	&				&Yes
-				&			&Yes		&UTXO			&Yes				&Stateless\\
-\hline
-\textbf{Quorum} 	&Yes			&?		&				&Order-Execute	&?
-				&			& 		&?				&?				&\\
-\hline
-\textbf{Hyperledger}	&Yes			&Yes		&				&Execute-Order	&
-				&			& 		&?				&?				& \\
- 				&			&		&				&Validate			&
-				&			& 		&				&				& \\
-\hline
-\end{tabular}}
-
-
-\vspace{1cm}
-
-{\begin{tabular}{| l | c | c | c | c | c | c | c | c | c | c |}
-\hline
-				& \textbf{Inter-Node}		& \textbf{}  			& \textbf{} 	&
+				& \textbf{Backup} 		& \textbf{}				&\textbf{Monetary}
+				& \textbf{}  			& \textbf{}  			& \textbf{Transaction} 	& \\
+\textbf{DLT}		& \textbf{System} 		& \textbf{Interfaces}		&\textbf{Model} 
+				& \textbf{Blockchain} 	& \textbf{Immutable} 		& \textbf{Validation} 		& \textbf{Architecture} \\
 				& \textbf{} 				& \textbf{}				&\textbf{}
-				& \textbf{} 				& \textbf{}				&\textbf{} \\
-\textbf{DLT}		& \textbf{Communication} 	& \textbf{} 				& \textbf{} 		& \textbf{} 
-				& \textbf{} 				& \textbf{}				&\textbf{} 
-				& \textbf{} 				& \textbf{}				&\textbf{} \\
-				& \textbf{} 				& \textbf{} 				& \textbf{} 				&
-				& \textbf{} 				& \textbf{ }				&\textbf{} 
-				& \textbf{} 				& \textbf{}				&\textbf{} \\
+				& \textbf{} 				& \textbf{} 				& \textbf{} 				&\\
 \hline
 \hline
-\textbf{Ethereum}	&Global			&		&				&	&
-				&			&		&	&				& \\
+\textbf{Holochain}	&No			&N/A				&Mutual Credit
+				&Individual	&No (link to				&Local to	& \\
+				&			&				& 
+				&chains 		&repl. code)				&the parties		& \\
 \hline
-\textbf{Holochain}	&Local		&?		&	&				&
-				&			& 		&				&				& \\
-				&			&		&				&				&
-				&			& 		&				&				& \\
+\textbf{Ethereum}	&External		&SQL			&Assets 
+				&Yes			&Yes				&?		&Order-Execute \\
+				&mirror DB			&				& 
+				& 			&				&				& \\
 \hline
-\textbf{Stellar}		&			&?		&				&				&?
-				&			& 		&?				&?				&\\
+
+\textbf{Stellar}		&?			&?				&Assets
+				&			&?				&				&\\
 \hline
-\textbf{Corda} 		&Flows			&		&&				&
-				&			&		&			&				&\\
+\textbf{Quorum} 	&?			&?				&Assets
+				&Yes			&?				&				&Order-Execute\\
+			 	&			&				&
+				&(Ethereum) 	&				&				& \\
 \hline
-\textbf{Quorum} 	&			&?		&				&	&?
-				&			& 		&?				&?				&\\
+\textbf{Hyperledger}	&Key-value	&SQL		&Adaptable to
+				&Yes			&Yes				&Peers			&Execute-Order-\\
+ 				&store DB		&NoSQL			&Mutual Credit
+				&			&				&				&Validate \\
 \hline
-\textbf{Hyperledger}	&			&		&				&	&
-				&			& 		&?				&?				& \\
- 				&			&		&				&			&
-				&			& 		&				&				& \\
+\textbf{Corda} 		&Relational DB	&SQL			&Assets
+				&No			&Yes				&Local to	& \\
+		 		&			&FPML			&
+				& 			&				&the parties		& \\
 \hline
 \end{tabular}}
-
-
 \caption{\bf \small Summary table comparing the main properties of different types of blockchain}
-\label{blockchain_type}
+\label{blockchain_types1}
 \end{centering}
-\end{sidewaystable}
+\end{table}
+
+
+\begin{table}
+\small
+\begin{centering}
+{\begin{tabular}{| l | c | c | c | c | c | c | c |}
+\hline
+				& \textbf{Regulatory/} 	& \textbf{Explicit links}	&\textbf{Business}
+				& \textbf{Computa-} 		& \textbf{Turing-}		&\textbf{Contract}	& \textbf{Inter-Node}	\\
+\textbf{DLT}		& \textbf{Supervisory} 	& \textbf{of SCs to}		&\textbf{Flow} 
+				& \textbf{tional} 			& \textbf{Complete}		&\textbf{Object}		& \textbf{Comm.} \\
+				& \textbf{nodes} 		& \textbf{legal prose}		&\textbf{} 
+				& \textbf{Model} 		& \textbf{}				&\textbf{} 			&\\
+\hline
+\hline
+\textbf{Holochain}	&Random				&			& 		&				&?
+				&					&Local \\
+				&Peers				&			& 		&				&
+				&					& \\
+\hline
+\textbf{Ethereum}	&					&			&		&Virtual			&No
+				&Stateful 				&Global \\
+				&					&			&		&Computer		&
+				& 					& \\
+\hline
+
+\textbf{Stellar}		&?					&			& 		&?				&No
+				&					& \\
+\hline
+\textbf{Quorum} 	&?					&			& 		&?				&No
+				&					& \\
+\hline
+\textbf{Hyperledger}	&					&			& 		&?				&Yes
+				&					& \\
+ 				&					&			& 		&				&
+				&					& \\
+\hline
+\textbf{Corda} 		&Yes					&			&Yes		&UTXO			&Yes	
+				&Stateless			&Flows \\
+\hline
+\hline
+\hline
+\hline
+				& \textbf{Native} 		& \textbf{Transaction}&\textbf{}
+				& \textbf{}  			& \textbf{}  		& \textbf{} 		& \\
+\textbf{DLT}		& \textbf{Token} 		& \textbf{Fees}		&\textbf{Backing} 
+				& \textbf{Convertibility}	& \textbf{} 			& \textbf{} 		& \textbf{} \\
+				& \textbf{} 				& \textbf{}			&\textbf{}
+				& \textbf{} 				& \textbf{} 			& \textbf{} 		&\\
+\hline
+\hline
+\textbf{Holochain}	&Yes			&Yes			& Fiat currency,
+				&Yes			&			&				& \\
+				&(Holo Fuel)	&(Holo Fuel)	&Hosting CPU
+				& 			&			&				& \\
+\hline
+\textbf{Ethereum}	&Yes			&Yes			&No 
+				&Yes			&			&				& \\
+				&(Ether)		&(Gas)		& 
+				& 			&			&				& \\
+\hline
+
+\textbf{Stellar}		&No			&			&
+				&N/A			&			&				&\\
+\hline
+\textbf{Quorum} 	&Yes			&			&
+				&Yes			&			&				&\\
+			 	&			&			&
+				& 			&			&				& \\
+\hline
+\textbf{Hyperledger}	&No			&Custom.		&N/A
+				&N/A			&			&				&\\
+ 				&			&			&
+				&			&			&				& \\
+\hline
+\textbf{Corda} 		&No			&			&
+				&N/A			&			&				& \\
+		 		&			&			&
+				& 			&			&				& \\
+\hline
+\end{tabular}}
+\caption{\bf \small Summary table comparing the main properties of different types of blockchain (Continued)}
+\label{blockchain_types2}
+\end{centering}
+\end{table}
+
+
+
 
 
 
