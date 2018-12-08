@@ -66,47 +66,42 @@ As shown in Figure \ref{fig:consensus_tradeoffs}, the consensus objective can be
 
 \section{Brief Summary of Some DLT Technologies}
 
-The INTERLACE team has looked at a number of blockchain technologies:
+The INTERLACE team has looked at a number of blockchain technologies, listed here in order of decreasing openness:
 \begin{packed_item1}
-\item Corda
 \item Holochain
+\item Ethereum
 \item Stellar
 \item Quorum (permissioned Ethereum)
 \item Hyperledger Fabric
+\item Corda
 \end{packed_item1}
 In this chapter we analyse and discuss them briefly in turn, emphasising the algorithmic, architectural,  mathematical, or financial aspects that are most pertinent to INTERLACE. The frameworks that have made it into this short list are all interesting for one reason or another, and at different points each of them was seriously taken into consideration for adoption. Stellar has an interesting mathematical foundation which is therefore studied and discussed in some detail since mathematical understanding can be transferred to other frameworks. The one that comes closest to the requirements of the Sardex mutual credit system is Hyperledger. Therefore, after presenting and discussing the others Hyperledger will be analysed and presented in more detail.
 
 
-\subsection{Corda}
-Corda \cite{Hearn2016} is a permissioned distributed database for banking networks. It does not use a blockchain
-
-
-
 \subsection{Holochain}
-Agent-centric
+Holochain is the only DLT we have examined that is agent-centric. This means that it does not attempt to achieve global consistency on the same data on a global ledger, but keeps track of individual peer's data histories.
+
+Holochain is composed of two parts: Holochain proper is the underlying technology -- not a global blockchain but in any case a persistence layer composed of many individual chains \cite{HarrisBrownEtAl2018}, and Holo, the interaction, governance, and financial framework that runs on Holochain.
 
 
-Holochain is a bit confusing because it is composed of two parts: Holochain proper is the underlying technology -- not a global blockchain but in any case a persistence layer composed of many individual chains \cite{HarrisBrownEtAl2018}.
-
-; and Holo, the interaction, governance, and financial framework that runs on Holochain.
-
-
-
-
-
+\subsection{Ethereum}
+Asset-centric
 
 
 \subsection{Stellar}
+Stellar is a system for international currency transfer and exchange. Thus, although it has its own native token (Lumens, XLM), this is similar to Ethereum gas in the sense that its main function is to prevent spamming. Thus, the transaction fees to be paid in XLM are very small. The actual assets being exhanged are ``credits'' that correspond to fiat currency that the counterparties wish to trade or exchange. In other words the units being recorded on the Stellar ledger chain are analogous to the ``statistical Euros'' discussed in  deliverable D3.1 \cite{INTERLACE_D31}.
+
 
 
 \subsection{Quorum}
+Quorum is a private and permissioned version of Ethereum, optimised for the enterprise.\footnote{\url{https://github.com/jpmorganchase/quorum-docs/blob/master/Quorum_Architecture_20171016.pdf}} \footnote{\url{quorum white paper}}
 
-\footnote{\url{https://github.com/jpmorganchase/quorum-docs/blob/master/Quorum_Architecture_20171016.pdf}}
 
 
 
 \subsection{Hyperledger}
 The main points of interest of Hyperledger Fabric are \cite{AndroulakiEtAl2018}:
+
 
 \begin{quote}
 \begin{packed_item1}
@@ -123,7 +118,10 @@ Hyperledger Indy-Plenum Byzantine Fault Tolerance (PBFT).\footnote{\url{https://
 \cite{Aublinetal2013}.
 
 
-%&\hspace{0.5cm}ASM/ASIM framework \\
+
+\subsection{Corda}
+Corda \cite{Hearn2016} is a permissioned distributed database for banking networks. It does not use a blockchain
+
 
 \begin{table}
 \small
@@ -138,7 +136,7 @@ Hyperledger Indy-Plenum Byzantine Fault Tolerance (PBFT).\footnote{\url{https://
 				& \textbf{} 			& \textbf{Language(s)}	&\textbf{}  \\
 \hline
 \hline
-\textbf{Holochain}	&General-purpose 				&Public		&Permissionless	&Agent-	&Yes		&?
+\textbf{Holochain}	&General-purpose 			&Public		&Permissionless	&Agent-	&Yes		&Lisp, JS
 				&Local 				\\
 				&platform 					&DHT		&DHT			&centric	&		&
 				& 					\\
@@ -149,15 +147,17 @@ Hyperledger Indy-Plenum Byzantine Fault Tolerance (PBFT).\footnote{\url{https://
 				& 					 \\
 \hline
 \textbf{Stellar}		&Cross-border 					&Public		&Permissionless	&Data-centric	&Limited	&Limited
-				&FBAS 				\\
-				&exchange 					&?			&				&			&		&
-				& 					\\
+				&SCP 				\\
+				&exchange 					&			&				&			&		&
+				&(FBAS)				\\
 \hline
 
-\textbf{Quorum} 	&Public and  			&Private		&Permissioned		&Data-centric	&Yes		&Solidity
-				&BFT 				\\
-			 	&banking sectors		&			&				&			&		&on EVM
-				& 					\\
+				&Public and  			&			&				&			&		&Solidity
+				&Configurable,				\\
+\textbf{Quorum} 	&banking  			&Private		&Permissioned		&Data-centric	&Yes		&on EVM
+				&voting-based 				\\
+			 	&sectors				&			&				&			&		&
+				&(PoS, LE, BFT)					\\
 \hline
 \textbf{Hyperledger}	&Enterprise, B2B		&Private		&Permissioned		&Data-centric	&Yes		&JS, Go
 				&Centralised 			\\
@@ -166,10 +166,10 @@ Hyperledger Indy-Plenum Byzantine Fault Tolerance (PBFT).\footnote{\url{https://
 \hline
 				&Business	 		&			&				&			&		&Bytecode
 				&Local state			\\
-\textbf{Corda} 		&agrmts between			&Private		&Permissioned		&Data-centric	&?		&subset
-				&(Notaries)			\\
+\textbf{Corda} 		&agrmts between			&Private		&Permissioned		&Data-centric	&Yes		&subset
+				&(Notary pools),			\\
 		 		&fin. institutions			&			&				&			&		&on JVM
-				&					\\
+				&pluggable			\\
 \hline
 \hline
 \hline
@@ -183,33 +183,35 @@ Hyperledger Indy-Plenum Byzantine Fault Tolerance (PBFT).\footnote{\url{https://
 \hline
 \hline
 \textbf{Holochain}	&No			&N/A				&Mutual Credit
-				&Individual	&No (link to				&Local to	& \\
+				&Individual	&No (link to		&Local to	& \\
 				&			&				& 
-				&chains 		&repl. code)				&the parties		& \\
+				&chains 		&repl. code)		&the parties		& \\
 \hline
 \textbf{Ethereum}	&External		&SQL			&Assets 
-				&Yes			&Yes				&?		&Order-Execute \\
-				&mirror DB			&				& 
+				&Yes			&Yes				&Each peer		&Order-Execute \\
+				&mirror DB	&				& 
 				& 			&				&				& \\
 \hline
 
-\textbf{Stellar}		&?			&?				&Assets
-				&			&?				&				&\\
+\textbf{Stellar}		&MySQL,		&Horizon			&Assets
+				&Chain of		&Yes				&Global			&Execute-Order-\\
+				&PostGres	&				&
+				&ledgers		&				&				&Validate\\
 \hline
 \textbf{Quorum} 	&?			&?				&Assets
-				&Yes			&?				&				&Order-Execute\\
+				&Yes			&?				&Every node. Data	&Order-Execute\\
 			 	&			&				&
-				&(Ethereum) 	&				&				& \\
+				&(Ethereum) 	&				&local to the parties		& \\
 \hline
-\textbf{Hyperledger}	&Key-value	&SQL		&Adaptable to
-				&Yes			&Yes				&Peers			&Execute-Order-\\
+\textbf{Hyperledger}	&Key-value	&SQL			&Adaptable to
+				&Yes			&Yes				&Validator				&Execute-Order-\\
  				&store DB		&NoSQL			&Mutual Credit
-				&			&				&				&Validate \\
+				&			&				&peers				&Validate \\
 \hline
 \textbf{Corda} 		&Relational DB	&SQL			&Assets
-				&No			&Yes				&Local to	& \\
+				&Global ledger	&Yes				&Local to				&Execute-Order-\\
 		 		&			&FPML			&
-				& 			&				&the parties		& \\
+				&locally visible 	&				&the parties			&Validate \\
 \hline
 \end{tabular}}
 \caption{\bf \small Summary table comparing the main properties of different types of blockchain}
@@ -225,44 +227,46 @@ Hyperledger Indy-Plenum Byzantine Fault Tolerance (PBFT).\footnote{\url{https://
 \hline
 				& \textbf{Regulatory/} 	& \textbf{Explicit links}	&\textbf{Business}
 				& \textbf{Computa-} 		& \textbf{Turing-}		&\textbf{Contract}	& \textbf{Inter-Node}	\\
-\textbf{DLT}		& \textbf{Supervisory} 	& \textbf{of SCs to}		&\textbf{Flow} 
+\textbf{DLT}		& \textbf{Supervisory} 	& \textbf{of SCs to}		&\textbf{flow} 
 				& \textbf{tional} 			& \textbf{Complete}		&\textbf{Object}		& \textbf{Comm.} \\
-				& \textbf{nodes} 		& \textbf{legal prose}		&\textbf{} 
+				& \textbf{nodes} 		& \textbf{legal prose}		&\textbf{modelling} 
 				& \textbf{Model} 		& \textbf{}				&\textbf{} 			&\\
 \hline
 \hline
-\textbf{Holochain}	&Random				&			& 		&				&?
-				&					&Local \\
+\textbf{Holochain}	&Random				&No			&No 		&?				&?
+				&?					&Local \\
 				&Peers				&			& 		&				&
 				&					& \\
 \hline
-\textbf{Ethereum}	&					&			&		&Virtual			&No
+\textbf{Ethereum}	&No					&No			&No		&Virtual (global)			&No
 				&Stateful 				&Global \\
 				&					&			&		&Computer		&
 				& 					& \\
 \hline
 
-\textbf{Stellar}		&?					&			& 		&?				&No
-				&					& \\
+\textbf{Stellar}		&No					&No			&No 		&?				&No
+				&?					&? \\
 \hline
-\textbf{Quorum} 	&?					&			& 		&?				&No
-				&					& \\
+\textbf{Quorum} 	&No					&Yes			&? 		&?				&No
+				&?					&Local \\
 \hline
-\textbf{Hyperledger}	&					&			& 		&?				&Yes
-				&					& \\
+\textbf{Hyperledger}	&					&No			&No 		&?				&Yes
+				&?					&Global \\
  				&					&			& 		&				&
 				&					& \\
 \hline
-\textbf{Corda} 		&Yes					&			&Yes		&UTXO			&Yes	
-				&Stateless			&Flows \\
+\textbf{Corda} 		&Yes					&Yes			&Yes		&UTXO			&Yes	
+				&Stateless			&Local \\
+				&					&			&		&				&		
+				&					&(Flows) \\
 \hline
 \hline
 \hline
 \hline
 				& \textbf{Native} 		& \textbf{Transaction}&\textbf{}
-				& \textbf{}  			& \textbf{}  		& \textbf{} 		& \\
+				& \textbf{}  			& \textbf{AML}  		& \textbf{} 		& \\
 \textbf{DLT}		& \textbf{Token} 		& \textbf{Fees}		&\textbf{Backing} 
-				& \textbf{Convertibility}	& \textbf{} 			& \textbf{} 		& \textbf{} \\
+				& \textbf{Convertibility}	& \textbf{Compliance} & \textbf{} 		& \textbf{} \\
 				& \textbf{} 				& \textbf{}			&\textbf{}
 				& \textbf{} 				& \textbf{} 			& \textbf{} 		&\\
 \hline
@@ -274,26 +278,28 @@ Hyperledger Indy-Plenum Byzantine Fault Tolerance (PBFT).\footnote{\url{https://
 \hline
 \textbf{Ethereum}	&Yes			&Yes			&No 
 				&Yes			&			&				& \\
-				&(Ether)		&(Gas)		& 
+				&(Ether: ETH)		&(Gas)		& 
 				& 			&			&				& \\
 \hline
 
-\textbf{Stellar}		&No			&			&
-				&N/A			&			&				&\\
+\textbf{Stellar}		&Yes			&Yes, in XLM	&No
+				&N/A			&MySQL		&				&\\
+				&(Lumens: XLM)&(Very small)	&
+				&N/A			&PostGres	&				&\\				
 \hline
-\textbf{Quorum} 	&Yes			&			&
+\textbf{Quorum} 	&No			&Custom-		&N/A
 				&Yes			&			&				&\\
-			 	&			&			&
+			 	&			&izable		&
 				& 			&			&				& \\
 \hline
-\textbf{Hyperledger}	&No			&Custom.		&N/A
+\textbf{Hyperledger}	&No			&Custom-		&N/A
 				&N/A			&			&				&\\
- 				&			&			&
+ 				&			&izable		&
 				&			&			&				& \\
 \hline
-\textbf{Corda} 		&No			&			&
+\textbf{Corda} 		&No			&Custom-			&N/A
 				&N/A			&			&				& \\
-		 		&			&			&
+		 		&			&izable		&
 				& 			&			&				& \\
 \hline
 \end{tabular}}
