@@ -194,7 +194,7 @@ Thus, nodes without liveness are blocked, whereas nodes without safety are diver
 
 Mazi\`eres explains that the above definition of liveness is weak because it only says that a node \emph{can} externalize, not that it \emph{will} or \emph{must}. As a consequence, there is a possibility for consensus to be forever delayed by, for example, preemptive reordering of the transactions. It is not clear whether this issue matters in the case of INTERLACE since we will not implement a completely decentralized system: some level of centralized control is likely to remain. Mazi\`eres in any case provides relevant references that can be consulted if this issue needs to be analysed in depth and resolved in some robust way.
 
-\subsubsection{Optimal Resilience: Quorum Intersection and Dispensable Sets}
+\subsubsection{Optimal Resilience: Quorum Intersection and Dispensable Sets\\}
 As is commonly assumed for asynchronous systems, messages between well-behaved nodes are eventually delivered, but can otherwise be delayed indefinitely or reordered arbitrarily. This section starts becoming more involved because it addresses the following non-trivial question: Given a specific $(V, Q)$ and a subset of $V$ that is ill-behaved, what are the best levels of safety and liveness that a FBAS can guarantee in an arbitrary network?
 \begin{quote}
 \vspace{-0.6cm}
